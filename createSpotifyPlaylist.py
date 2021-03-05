@@ -8,6 +8,7 @@ import os
 import json
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
+import re
 
 
 
@@ -81,6 +82,37 @@ class CreateSpotifyPlaylist:
         pass
 
 
+    def cleanArtistNameAndTitle(self, title, artist):
+        """
+        This function will find the word vevo in every string and return the string
+        with out the word vevo or music video.  
+        """
+        wordsToRemove = ['VEVO', '(Official Music Video)', '(Official)', '(Official Video)', '-']
+        # print(title)
+
+        # removes anything inside parentheses (ie. (Official Music Video)', '(Official)', '(Official Video))
+        title = re.sub("[\(\[].*?[\)\]]", "", title)
+
+        # removes vevo from name
+        vevo = artist[-4:] # select last four characters where vevo would be
+
+        # check if the last 4 characters are vevo
+        if vevo == "VEVO":
+            # if they are ignore last 4 characters which are vevo
+            artist = artist[:-4]
+        else:
+            pass
+        
+        title = title.replace(artist, ' ')
+        title = title.replace('-', ' ')
+        t = re.sub(' +', ' ', title)
+        # print(t)
+        # print()
+
+
+        return t, artist
+
+
     def getTracksFromPlaylist(self, youTubePlaylistID):
         """
         This function will get all the tracks from the playlist that has 
@@ -101,6 +133,8 @@ class CreateSpotifyPlaylist:
         # a list to hold playlist data
         playlist_items = []
 
+
+
         # add items to playlist_items
         while request is not None:
             response = request.execute()
@@ -109,29 +143,26 @@ class CreateSpotifyPlaylist:
 
         
         for item in playlist_items:
-            videoTitle = item['snippet']['title']
-            youtube_url = "https://www.youtube.com/watch?v={}".format(
-                item["id"])
-            
-            
-            video = youtube_dl.YoutubeDL({}).extract_info(youtube_url, download=False)
-            # trackName = video["track"]
-            # artistName = video["artist"]
+            trackName, artistName = self.cleanArtistNameAndTitle(item['snippet']['title'], item['snippet']['videoOwnerChannelTitle'])   
 
-        #     # add all the track information for later use
-        #     if trackName is not None and artistName is not None:
-        #         self.allTheTrackInfo[videoTitle]= {
-        #             'youtubeUrl': youtube_url,
-        #             'trackName': trackName,
-        #             'artistName': artistName,
-        #             # get spotify uri so we can easily add the songs later
-        #             'uri': self.getSpotifyURICode(trackName, artistName)
-                    
-        #         }
-        #     else:
-        #         pass
+            # get track uri
+            uri = self.getSpotifyURICode(trackName, artistName)
+            if uri == '':
+                pass
+            else:
+                # add all the track information for later use
+                if trackName is not None and artistName is not None:
+                    self.allTheTrackInfo[trackName]= {
+                        'trackName': trackName,
+                        'artistName': artistName,
+                        'uri': uri
+                        
+                    }
+                else:
+                    pass
             
-        # print(allTheTrackInfo)
+        # print(self.allTheTrackInfo)
+        print(len(self.allTheTrackInfo))
     
         return 0
 
@@ -142,11 +173,14 @@ class CreateSpotifyPlaylist:
         Once we have gotten the track info we will get the uri and return it
         """
 
-
         trackInfo = self.spotifyClient.search(q='artist:' + artistName + ' track:' + trackName, type='track')
 
 
-        uri = trackInfo['tracks']['items'][0]['uri']
+        uri = ''
+        if len(trackInfo['tracks']['items']) != 0:
+            uri = trackInfo['tracks']['items'][0]['uri']
+        else: 
+            pass
 
 
         return uri
