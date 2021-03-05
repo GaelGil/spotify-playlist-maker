@@ -91,7 +91,7 @@ class CreateSpotifyPlaylist:
         # youTubePlaylistID = "PL4o29bINVT4EG_y-k5jGoOu3-Am8Nvi10"
 
         # request youtube playlist data
-        request = yt.playlistItems().list(
+        request = self.youtubeClient.playlistItems().list(
             part = "snippet",
             playlistId = youTubePlaylistID,
             maxResults = 50
@@ -105,7 +105,7 @@ class CreateSpotifyPlaylist:
         while request is not None:
             response = request.execute()
             playlist_items += response["items"]
-            request = yt.playlistItems().list_next(request, response)
+            request = self.youtubeClient.playlistItems().list_next(request, response)
 
         
         for item in playlist_items:
@@ -115,22 +115,23 @@ class CreateSpotifyPlaylist:
             
             
             video = youtube_dl.YoutubeDL({}).extract_info(youtube_url, download=False)
-            trackName = video["track"]
-            artistName = video["artist"]
+            # trackName = video["track"]
+            # artistName = video["artist"]
 
-            # add all the track information for later use
-            if trackName is not None and artistName is not None:
-                self.allTheTrackInfo[videoTitle]= {
-                    'youtubeUrl': youtube_url,
-                    'trackName': trackName,
-                    'artistName': artistName,
-                    # get spotify uri so we can easily add the songs later
-                    'uri': self.getSpotifyURICode(trackName, artistName)
+        #     # add all the track information for later use
+        #     if trackName is not None and artistName is not None:
+        #         self.allTheTrackInfo[videoTitle]= {
+        #             'youtubeUrl': youtube_url,
+        #             'trackName': trackName,
+        #             'artistName': artistName,
+        #             # get spotify uri so we can easily add the songs later
+        #             'uri': self.getSpotifyURICode(trackName, artistName)
                     
-                }
-            else:
-                pass
+        #         }
+        #     else:
+        #         pass
             
+        # print(allTheTrackInfo)
     
         return 0
 
@@ -157,13 +158,13 @@ class CreateSpotifyPlaylist:
         the youtube playlist
         """
 
-        scope = "user-library-read,user-top-read,playlist-modify-public"
+        # scope = "user-library-read,user-top-read,playlist-modify-public"
 
-        sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
+        # sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
-        results = sp.current_user_saved_tracks()
+        results = self.spotifyClient.current_user_saved_tracks()
 
-        newPlaylist = sp.user_playlist_create(user=os.environ['spotifyUserID'], name='another', public=True, collaborative=False, description='a bot created this')
+        newPlaylist = self.spotifyClient.user_playlist_create(user=os.environ['spotifyUserID'], name='another', public=True, collaborative=False, description='a bot created this')
         
         return newPlaylist['id']
 
@@ -191,8 +192,9 @@ def controller():
     newPlaylist = CreateSpotifyPlaylist()
     artist= 'Dua Lipa'
     track= 'Levitating'
-
-    print(newPlaylist.getSpotifyURICode(track, artist))
+    ytPlaylist = 'PL4o29bINVT4EG_y-k5jGoOu3-Am8Nvi10'
+    newPlaylist.getTracksFromPlaylist(ytPlaylist)
+    # print(newPlaylist.getSpotifyURICode(track, artist))
     # addYTTracksToSpotify()
     return 0
 
