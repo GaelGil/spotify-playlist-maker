@@ -24,4 +24,16 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 # add songs into playlist
 # sp.playlist_add_items(playlist_id='7sEqgazYNiMwiki1V9Lv4A', items=track, position=None)
 
-print(sp.playlist(playlist_id='5AkF0NakkXHNYwFR6glS3j'))
+# print(sp.playlist(playlist_id='7sEqgazYNiMwiki1V9Lv4A'))
+
+playlistName = 'girls and gays'
+
+pl =  sp.search(q=playlistName, type='playlist', limit=50)
+print(pl)
+
+
+
+
+# q=name:abacab&type=album,track
+
+# print(sp.featured_playlists(locale=None, country=None, timestamp=None, limit=20, offset=0))

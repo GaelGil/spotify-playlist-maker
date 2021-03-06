@@ -25,3 +25,7 @@ for tweet in kurtis_tweets:
     print(tweet.text)
     print(tweet.user.profile_image_url)
     print(" ")
+
+atMentions = api.mentions_timeline()
+
+print(atMentions)

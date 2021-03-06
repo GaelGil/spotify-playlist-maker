@@ -17,6 +17,7 @@ class CreateSpotifyPlaylist:
         self.youtubeClient = self.getYoutubeClient()
         self.allTheTrackInfo = {}
         self.spotifyClient = self.authSpotify()
+        self.uris = []
 
     def getYoutubeClient(self):
         """
@@ -90,6 +91,8 @@ class CreateSpotifyPlaylist:
         wordsToRemove = ['VEVO', '(Official Music Video)', '(Official)', '(Official Video)', '-']
         # print(title)
 
+        title = title.lower()
+        artist = artist.lower()
         # removes anything inside parentheses (ie. (Official Music Video)', '(Official)', '(Official Video))
         title = re.sub("[\(\[].*?[\)\]]", "", title)
 
@@ -97,20 +100,64 @@ class CreateSpotifyPlaylist:
         vevo = artist[-4:] # select last four characters where vevo would be
 
         # check if the last 4 characters are vevo
-        if vevo == "VEVO":
+        if vevo == "vevo":
             # if they are ignore last 4 characters which are vevo
             artist = artist[:-4]
         else:
             pass
-        
-        title = title.replace(artist, ' ')
+
+
+        # remove artist if its in the title
+        # title = title.replace(artist, ' ')
+        # remove dashes from title
         title = title.replace('-', ' ')
-        t = re.sub(' +', ' ', title)
-        # print(t)
-        # print()
+        # remove commas
+        title = title.replace(',', '')
+        # remove periods
+        title = title.replace('.', '')
+        # remove word from title
+        title = title.replace('video oficial', ' ')
+        # remove any white space from the title
+        cleanTitle = re.sub(' +', ' ', title)
+        # # remove music from artist 
+        # artist =  artist.replace('music', '')
+        # remove any white spcae from artist name
+        artist = re.sub(' +', ' ', artist)
+
+        
+        
 
 
-        return t, artist
+        # title as a list of strings
+        titleWords = cleanTitle.split()
+
+        # artist name as chars
+        artistChars = list(artist)
+
+        # print(artist)
+        word = artist.split()
+
+        # only change name if its in this format `artistname` not `artist name`
+        if len(word) ==1:
+            if len(titleWords) > 1:
+                # first two words of title where artist can be found
+                suspectedArtist = titleWords[0]+ titleWords[1]
+                if artist == suspectedArtist:
+                    # change artist from `artistname` to `artist name`
+                    artist = titleWords[0] + " " + titleWords[1]
+                    # remove artist from title
+                    cleanTitle = ' '.join(titleWords[2:])
+                else:
+                    pass
+            else:
+                pass
+        else:
+            pass
+
+        
+
+
+        return cleanTitle, artist
 
 
     def getTracksFromPlaylist(self, youTubePlaylistID):
@@ -134,7 +181,6 @@ class CreateSpotifyPlaylist:
         playlist_items = []
 
 
-
         # add items to playlist_items
         while request is not None:
             response = request.execute()
@@ -152,18 +198,11 @@ class CreateSpotifyPlaylist:
             else:
                 # add all the track information for later use
                 if trackName is not None and artistName is not None:
-                    self.allTheTrackInfo[trackName]= {
-                        'trackName': trackName,
-                        'artistName': artistName,
-                        'uri': uri
-                        
-                    }
+                    self.uris.append(uri)
                 else:
                     pass
             
-        # print(self.allTheTrackInfo)
-        print(len(self.allTheTrackInfo))
-    
+        print('done getting info')
         return 0
 
 
@@ -173,28 +212,28 @@ class CreateSpotifyPlaylist:
         Once we have gotten the track info we will get the uri and return it
         """
 
-        trackInfo = self.spotifyClient.search(q='artist:' + artistName + ' track:' + trackName, type='track')
+        q = f'{trackName} {artistName}'
+        trackInfo = self.spotifyClient.search(q=q, type='track')
 
 
         uri = ''
         if len(trackInfo['tracks']['items']) != 0:
             uri = trackInfo['tracks']['items'][0]['uri']
         else: 
+            # print(trackName)
+            # print(artistName)
+            # print()
             pass
 
 
         return uri
 
 
-    def createSpPlaylist():
+    def createSpPlaylist(self):
         """
         This function will create a playlist in spotify from the songs in
         the youtube playlist
         """
-
-        # scope = "user-library-read,user-top-read,playlist-modify-public"
-
-        # sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
         results = self.spotifyClient.current_user_saved_tracks()
 
@@ -203,18 +242,17 @@ class CreateSpotifyPlaylist:
         return newPlaylist['id']
 
 
-    def addYTTracksToSpotify():
+    def addYTTracksToSpotify(self):
         """
         This function will add all the tracks that were found in the youtube
         playlist to the spotify playlist
         """
-
-        spotifyPlaylistID = self.createSpPlaylist()
-        trackUris = []
-        for track in self.allTheTrackInfo:
-            trackUris.append(track['uri'])
-
-        self.spotifyClient.playlist_add_items(playlist_id=spotifyPlaylistID, items=trackUris, position=None)
+        
+        self.spotifyClient.playlist_add_items(
+            playlist_id='spotify:playlist:5AkF0NakkXHNYwFR6glS3j', 
+            items=self.uris[:len(self.uris)//2], 
+            position=None
+            )
 
 
         return 0
@@ -228,6 +266,8 @@ def controller():
     track= 'Levitating'
     ytPlaylist = 'PL4o29bINVT4EG_y-k5jGoOu3-Am8Nvi10'
     newPlaylist.getTracksFromPlaylist(ytPlaylist)
+    newPlaylist.addYTTracksToSpotify()
+    # addYTTracksToSpotify(newPlaylist.addYTTracksToSpotify())
     # print(newPlaylist.getSpotifyURICode(track, artist))
     # addYTTracksToSpotify()
     return 0
@@ -236,11 +276,11 @@ def controller():
 controller()
 
 
-# def twitterReader():
-#     """
-#     This function will check if there have been any tweets tweeted @me. If there has 
-#     it will check if it is a youtube playlist link. If its a youtube playlist link
-#     we will create a spotify playlist from it. If the link is not valid then it will
-#     tweet back with `not a valid playlist link`
-#     """
-#     pass
+def twitterReader():
+    """
+    This function will check if there have been any tweets tweeted @me. If there has 
+    it will check if it is a youtube playlist link. If its a youtube playlist link
+    we will create a spotify playlist from it. If the link is not valid then it will
+    tweet back with `not a valid playlist link`
+    """
+    pass
