@@ -9,6 +9,8 @@ import json
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import re
+import requests
+
 
 
 
@@ -18,6 +20,7 @@ class CreateSpotifyPlaylist:
         self.allTheTrackInfo = {}
         self.spotifyClient = self.authSpotify()
         self.uris = []
+        self.popularTracks = []
 
     def getYoutubeClient(self):
         """
@@ -72,15 +75,6 @@ class CreateSpotifyPlaylist:
         spotifyClient = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
         return spotifyClient
-
-
-    def getYouTubePlayList(self, youTubePlaylistLink):
-        """
-        This function will get a playlist link of a youtube channel and
-        check if its a valid playlist. If it is it will return the playlist
-        id
-        """
-        pass
 
 
     def cleanArtistNameAndTitle(self, title, artist):
@@ -205,6 +199,42 @@ class CreateSpotifyPlaylist:
         print('done getting info')
         return 0
 
+    def getMostPopularSongs(spotifyPlaylistID:str):
+        """
+        This function will go through a playlist and find its most popular songs
+        """
+        # get spotify playlist
+        tracksInPlaylist = sp.playlist(playlist_id=spotifyPlaylistID)
+        
+        # select the first tracks popularity number
+        mostPopular = tracksInPlaylist['tracks']['items'][0]['track']['popularity']
+
+        # search for most popular tracks
+        for track in tracksInPlaylist['tracks']['items']:
+            if track['track'] == None:
+                pass
+            else:
+                popularity = track['track']['popularity'] # get popularity number
+                uri = track['track']['uri'] # get uri for the track
+                # add popular tracks to list of popularity
+                if popularity > mostPopular: 
+                    mostPopular = popularity
+                    self.popularTracks.append({uri:popularity})
+
+        return 0
+
+    def getSpotifyPlaylists(self, query:str):
+        """
+        This function will get spotify playlists from a search query
+        """
+        # search for playlist that match the query on spotify
+        playlists =  sp.search(q=query, type='playlist', limit=50)
+        # find the most popular songs from that playlist 
+        for playlist in playlists['playlists']['items']:
+            playlistUri = playlist['uri']
+            self.getMostPopularSongs(playlistUri)
+        
+        return 0
 
     def getSpotifyURICode(self, trackName, artistName):
         """
@@ -258,22 +288,59 @@ class CreateSpotifyPlaylist:
         return 0
 
 
+    def addPlaylistTracksToNew():
+        """
+        """
+
+        self.spotifyClient.playlist_add_items(
+            playlist_id='spotify:playlist:5AkF0NakkXHNYwFR6glS3j', 
+            items=self.popularTracks, 
+            position=None
+            )
 
 
-def controller():
+        return 0
+
+
+
+
+def isLink(text:str):
+    """
+    This function will check if a string is a youtube link
+    """
+    request = requests.head(text)
+
+    # if requests.exceptions.MissingSchema:
+    #     return 404
+
+    return request.status_code
+
+def createFromYoutube():
+    """
+    This function will create
+    """
     newPlaylist = CreateSpotifyPlaylist()
-    artist= 'Dua Lipa'
-    track= 'Levitating'
     ytPlaylist = 'PL4o29bINVT4EG_y-k5jGoOu3-Am8Nvi10'
+    # get youtube songs
     newPlaylist.getTracksFromPlaylist(ytPlaylist)
+    # create a new playlist to add them to
+    newPlaylist.createSpPlaylist()
+    # add tracks to new playlist
     newPlaylist.addYTTracksToSpotify()
-    # addYTTracksToSpotify(newPlaylist.addYTTracksToSpotify())
-    # print(newPlaylist.getSpotifyURICode(track, artist))
-    # addYTTracksToSpotify()
+
     return 0
 
 
-controller()
+def createFromSearchQuery():
+    newPlaylist = createSpPlaylist()
+    # search for playlists
+    newPlaylist.getSpotifyPlaylists()
+    # create a new playlist 
+    newPlaylist.createSpPlaylist()
+    # add songs to playlist
+    newPlaylist.addPlaylistTracksToNew()
+
+
 
 
 def twitterReader():
@@ -283,4 +350,18 @@ def twitterReader():
     we will create a spotify playlist from it. If the link is not valid then it will
     tweet back with `not a valid playlist link`
     """
+    tweetOne = 'girls and gays'
+    tweetTwo = 'https://www.youtube.com/watch?v=SlPhMPnQ58k&list=PL4o29bINVT4EG_y-k5jGoOu3-Am8Nvi10'
+    if isLink(tweetOne) == 200:
+        print('this should not print')
+    else:
+        print('it worked')
+
+
+    if isLink(tweetTwo) == 200:
+        print('this should print')
+    else:
+        print('didnt work')
     pass
+
+twitterReader()
