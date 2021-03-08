@@ -69,6 +69,9 @@ class CreateSpotifyPlaylist:
 
     def authSpotify(self):
         """
+        This function will get the spotify client so we can use the api by authenticating. It will 
+        also set the scopes so we are able to use the tools that we need such as `playlist-modify-public`
+        to create public spotify playlist
         """
         scope = "user-library-read,user-top-read,playlist-modify-public"
 
@@ -156,12 +159,11 @@ class CreateSpotifyPlaylist:
 
     def getTracksFromPlaylist(self, youTubePlaylistID):
         """
-        This function will get all the tracks from the playlist that has 
-        been submited. It will get all the nesecsary data that we will 
-        need to create a playlist later
+        This function will get the tracks from the youtubeplaylist. We get the tracks from the
+        youtube playlist by using the youtube api to search for the playlist using the playlist id.
+        This will return some info (ie. artist, name of video)that we then use to search spotify.
+
         """
-        # youtube playlist id
-        # youTubePlaylistID = "PL4o29bINVT4EG_y-k5jGoOu3-Am8Nvi10"
 
         # request youtube playlist data
         request = self.youtubeClient.playlistItems().list(
@@ -199,9 +201,11 @@ class CreateSpotifyPlaylist:
         print('done getting info')
         return 0
 
+
     def getMostPopularSongs(spotifyPlaylistID:str):
         """
-        This function will go through a playlist and find its most popular songs
+        This function takes in a string (spotify playlist uri) as its argument. It then gets that
+        playlists info to then get the most popular songs. 
         """
         # get spotify playlist
         tracksInPlaylist = sp.playlist(playlist_id=spotifyPlaylistID)
@@ -223,18 +227,21 @@ class CreateSpotifyPlaylist:
 
         return 0
 
+
     def getSpotifyPlaylists(self, query:str):
         """
         This function will get spotify playlists from a search query
         """
         # search for playlist that match the query on spotify
         playlists =  sp.search(q=query, type='playlist', limit=50)
+
         # find the most popular songs from that playlist 
         for playlist in playlists['playlists']['items']:
             playlistUri = playlist['uri']
             self.getMostPopularSongs(playlistUri)
         
         return 0
+
 
     def getSpotifyURICode(self, trackName, artistName):
         """
@@ -290,6 +297,7 @@ class CreateSpotifyPlaylist:
 
     def addPlaylistTracksToNew():
         """
+        This function will add songs to a new playlist
         """
 
         self.spotifyClient.playlist_add_items(
@@ -304,25 +312,13 @@ class CreateSpotifyPlaylist:
 
 
 
-def isLink(text:str):
+def createFromYoutube(youtubeID:str):
     """
-    This function will check if a string is a youtube link
-    """
-    request = requests.head(text)
-
-    # if requests.exceptions.MissingSchema:
-    #     return 404
-
-    return request.status_code
-
-def createFromYoutube():
-    """
-    This function will create
+    This function will create a spotify playlist given a youtube playlist id
     """
     newPlaylist = CreateSpotifyPlaylist()
-    ytPlaylist = 'PL4o29bINVT4EG_y-k5jGoOu3-Am8Nvi10'
     # get youtube songs
-    newPlaylist.getTracksFromPlaylist(ytPlaylist)
+    newPlaylist.getTracksFromPlaylist(youtubeID)
     # create a new playlist to add them to
     newPlaylist.createSpPlaylist()
     # add tracks to new playlist
@@ -331,10 +327,14 @@ def createFromYoutube():
     return 0
 
 
-def createFromSearchQuery():
+
+def createFromSearchQuery(query:str):
+    """
+    This function will create a spotify playlist given a search query
+    """
     newPlaylist = createSpPlaylist()
     # search for playlists
-    newPlaylist.getSpotifyPlaylists()
+    newPlaylist.getSpotifyPlaylists(query)
     # create a new playlist 
     newPlaylist.createSpPlaylist()
     # add songs to playlist
@@ -343,25 +343,3 @@ def createFromSearchQuery():
 
 
 
-def twitterReader():
-    """
-    This function will check if there have been any tweets tweeted @me. If there has 
-    it will check if it is a youtube playlist link. If its a youtube playlist link
-    we will create a spotify playlist from it. If the link is not valid then it will
-    tweet back with `not a valid playlist link`
-    """
-    tweetOne = 'girls and gays'
-    tweetTwo = 'https://www.youtube.com/watch?v=SlPhMPnQ58k&list=PL4o29bINVT4EG_y-k5jGoOu3-Am8Nvi10'
-    if isLink(tweetOne) == 200:
-        print('this should not print')
-    else:
-        print('it worked')
-
-
-    if isLink(tweetTwo) == 200:
-        print('this should print')
-    else:
-        print('didnt work')
-    pass
-
-twitterReader()
