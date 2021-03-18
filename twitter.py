@@ -49,7 +49,10 @@ def isLink(text:str):
 
 
 
-
+def getSearchQuery():
+    """
+    This fuction will get 
+    """
 
 def twitterReader():
     """

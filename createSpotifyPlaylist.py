@@ -21,6 +21,7 @@ class CreateSpotifyPlaylist:
         self.spotifyClient = self.authSpotify()
         self.uris = []
         self.popularTracks = []
+        self.popularList = []
 
     def getYoutubeClient(self):
         """
@@ -202,13 +203,13 @@ class CreateSpotifyPlaylist:
         return 0
 
 
-    def getMostPopularSongs(spotifyPlaylistID:str):
+    def getMostPopularSongs(self, spotifyPlaylistID:str):
         """
         This function takes in a string (spotify playlist uri) as its argument. It then gets that
         playlists info to then get the most popular songs. 
         """
         # get spotify playlist
-        tracksInPlaylist = sp.playlist(playlist_id=spotifyPlaylistID)
+        tracksInPlaylist = self.spotifyClient.playlist(playlist_id=spotifyPlaylistID)
         
         # select the first tracks popularity number
         mostPopular = tracksInPlaylist['tracks']['items'][0]['track']['popularity']
@@ -224,6 +225,11 @@ class CreateSpotifyPlaylist:
                 if popularity > mostPopular: 
                     mostPopular = popularity
                     self.popularTracks.append({uri:popularity})
+                    if uri in self.popularList:
+                        pass
+                    else:
+                        self.popularList.append(uri)
+
 
         return 0
 
@@ -233,7 +239,7 @@ class CreateSpotifyPlaylist:
         This function will get spotify playlists from a search query
         """
         # search for playlist that match the query on spotify
-        playlists =  sp.search(q=query, type='playlist', limit=50)
+        playlists =  self.spotifyClient.search(q=query, type='playlist', limit=50)
 
         # find the most popular songs from that playlist 
         for playlist in playlists['playlists']['items']:
@@ -266,7 +272,7 @@ class CreateSpotifyPlaylist:
         return uri
 
 
-    def createSpPlaylist(self):
+    def createSpPlaylist(self, playlistName):
         """
         This function will create a playlist in spotify from the songs in
         the youtube playlist
@@ -274,40 +280,48 @@ class CreateSpotifyPlaylist:
 
         results = self.spotifyClient.current_user_saved_tracks()
 
-        newPlaylist = self.spotifyClient.user_playlist_create(user=os.environ['spotifyUserID'], name='another', public=True, collaborative=False, description='a bot created this')
+        newPlaylist = self.spotifyClient.user_playlist_create(user=os.environ['spotifyUserID'], name=playlistName, public=True, collaborative=False, description='a bot created this')
         
         return newPlaylist['id']
 
 
-    def addYTTracksToSpotify(self):
-        """
-        This function will add all the tracks that were found in the youtube
-        playlist to the spotify playlist
-        """
+    # def addYTTracksToSpotify(self):
+    #     """
+    #     This function will add all the tracks that were found in the youtube
+    #     playlist to the spotify playlist
+    #     """
         
-        self.spotifyClient.playlist_add_items(
-            playlist_id='spotify:playlist:5AkF0NakkXHNYwFR6glS3j', 
-            items=self.uris[:len(self.uris)//2], 
-            position=None
-            )
 
 
         return 0
 
 
-    def addPlaylistTracksToNew():
+    def addTracksToPlaylist(self, type:str, playlistID:str):
         """
-        This function will add songs to a new playlist
+        This function will addd tracks to a playlist 
         """
+        if type == 'youtube':
+            self.spotifyClient.playlist_add_items(
+                playlist_id=playlistID, 
+                items=self.uris[:len(self.uris)//2], 
+                position=None
+                )
+        else:
+            listOne = self.popularList[:len(self.popularList)//2]
+            listTwo = self.popularList[len(self.popularList)//2:]
 
-        self.spotifyClient.playlist_add_items(
-            playlist_id='spotify:playlist:5AkF0NakkXHNYwFR6glS3j', 
-            items=self.popularTracks, 
-            position=None
-            )
+            self.spotifyClient.playlist_add_items(
+                playlist_id=playlistID, 
+                items=listOne, 
+                position=None
+                )
+            self.spotifyClient.playlist_add_items(
+                playlist_id=playlistID, 
+                items=listTwo, 
+                position=None
+                )
 
 
-        return 0
 
 
 
@@ -322,7 +336,7 @@ def createFromYoutube(youtubeID:str):
     # create a new playlist to add them to
     newPlaylist.createSpPlaylist()
     # add tracks to new playlist
-    newPlaylist.addYTTracksToSpotify()
+    newPlaylist.addTracksToPlaylist('youtube')
 
     return 0
 
@@ -332,14 +346,15 @@ def createFromSearchQuery(query:str):
     """
     This function will create a spotify playlist given a search query
     """
-    newPlaylist = createSpPlaylist()
+    newPlaylist = CreateSpotifyPlaylist()
     # search for playlists
     newPlaylist.getSpotifyPlaylists(query)
     # create a new playlist 
-    newPlaylist.createSpPlaylist()
+    newSpotifyPlaylistID = newPlaylist.createSpPlaylist(query)
     # add songs to playlist
-    newPlaylist.addPlaylistTracksToNew()
+    newPlaylist.addTracksToPlaylist('not youtube', newSpotifyPlaylistID)
 
+    return 0
 
 
 
