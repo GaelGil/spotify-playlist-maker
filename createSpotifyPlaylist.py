@@ -272,11 +272,15 @@ class CreateSpotifyPlaylist:
         return uri
 
 
-    def createSpPlaylist(self, playlistName):
+    def createSpPlaylist(self, playlistName:str, forUser:str):
         """
         This function will create a playlist in spotify from the songs in
         the youtube playlist
         """
+        if (forUser):
+            playlistName = playlistName + ' for user ' + forUser
+        else:
+            pass
 
         results = self.spotifyClient.current_user_saved_tracks()
 
@@ -342,7 +346,7 @@ def createFromYoutube(youtubeID:str):
 
 
 
-def createFromSearchQuery(query:str):
+def createFromSearchQuery(query:str, name:str):
     """
     This function will create a spotify playlist given a search query
     """

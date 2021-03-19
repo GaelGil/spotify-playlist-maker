@@ -49,10 +49,12 @@ def isLink(text:str):
 
 
 
-def getSearchQuery():
+def getSearchQuery(tweet:str):
     """
     This fuction will get 
     """
+    title = title.replace('video oficial', ' ')
+
 
 def twitterReader():
     """
@@ -65,8 +67,13 @@ def twitterReader():
     atMentions = api.mentions_timeline()
 
     for mention in atMentions:
-        if isLink(mention) == True:
-            youtubeID = getPlaylistId(mention)
+        tweet = mention.text
+        user = mention.user.screen_name
+        if isLink(tweet) == True:
+            # remove name @
+            # get youtube playlist id
+            youtubeID = getPlaylistId(tweet)
+            # create a new playlist
             createFromYoutube(youtubeID)
         else:
             createFromSearchQuery(mention)
