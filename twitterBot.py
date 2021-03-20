@@ -1,6 +1,6 @@
 import tweepy
 import os
-
+import re
 auth = tweepy.OAuthHandler(os.environ['consumer_key'], os.environ['consumer_secret_key'])
 auth.set_access_token(os.environ['access_token'], os.environ['access_token_secret'])
 
@@ -35,23 +35,34 @@ atMentions = api.mentions_timeline()
 # print(atMentions[0].user.screen_name)
 
 
-def getSearchQuery(tweet:str, user:str):
-    """
-    This fuction will get 
-    """
-    user = '@' + user
-    tweet = tweet.replace(user, ' ')
+# def getSearchQuery(tweet:str):
+#     """
+#     This fuction will get 
+#     """
+#     # removes the user (@user)
+#     tweet = re.sub(r'[@][a-zA-Z0-9_.+-]+', '', tweet)
+
+#     return tweet
 
 
-    print(tweet)
-    return 0
-
-
-getSearchQuery(atMentions[0].text, atMentions[0].user.screen_name)
+# getSearchQuery(atMentions[0].text, atMentions[0].user.screen_name)
 # for mention in atMentions:
 #     print(mention.text)
 #     print(mention.user.screen_name)
 
+
+
+def getUri(playlist):
+    # removes the user (@user)
+    if ''.join(list(playlist)[0:7]) == 'spotify':
+        playlist= re.sub(r'^spotify\Wplaylist\W', '', playlist)
+
+    return playlist
+
+
+uri = getUri('spotify:playlist:1ctWrfpts7PcV1qvbWZnIj')
+
+print(uri)
 
 
 

@@ -1,5 +1,6 @@
 import tweepy
 import os
+import re
 from createSpotifyPlaylist import createFromYoutube, createFromSearchQuery
 
 auth = tweepy.OAuthHandler(os.environ['consumer_key'], os.environ['consumer_secret_key'])
@@ -9,26 +10,10 @@ api = tweepy.API(auth)
 
 
 def getPlaylistId(youtubePlaylist:str):
-    # youtubeLink = 'https://www.youtube.com/watch?v='
-    
-    # youtube = list(youtubePlaylist)
-    # youtube = youtube[0:32]
-    # youtubeHead = ''.join(youtube)
+    """
+    """
 
-    # if youtubeHead != youtubeLink:
-    #     return ('Not Valid Link')
-    # else:
-    #     link = list(youtubePlaylist)[32:len(youtubePlaylist)-1]
-    #     link = ''.join(link)
-    #     print(link)
-
-
-    # youTubePlaylistID = 0
-
-    youTubePlaylistID = list(youtubePlaylist)
-    youTubePlaylistID = youTubePlaylistID[-34:]
-
-    return ''.join(youTubePlaylistID)
+    return 0 
 
 
 def isLink(text:str):
@@ -53,7 +38,20 @@ def getSearchQuery(tweet:str):
     """
     This fuction will get 
     """
-    title = title.replace('video oficial', ' ')
+    # removes the user (@user)
+    tweet = re.sub(r'[@][a-zA-Z0-9_.+-]+', '', tweet)
+
+    return tweet
+
+
+def getUri(playlist):
+    """
+    """
+    if ''.join(list(playlist)[0:7]) == 'spotify':
+        playlist= re.sub(r'^spotify\Wplaylist\W', '', playlist)
+
+    return playlist
+
 
 
 def twitterReader():
@@ -70,13 +68,20 @@ def twitterReader():
         tweet = mention.text
         user = mention.user.screen_name
         if isLink(tweet) == True:
-            # remove name @
             # get youtube playlist id
             youtubeID = getPlaylistId(tweet)
             # create a new playlist
             createFromYoutube(youtubeID)
         else:
-            createFromSearchQuery(mention)
+            # get query from the tweet
+            query = getSearchQuery(mention)
+            # create the playlist
+            playlist = createFromSearchQuery(query, user)
+            # turn the playlist id from spotify:playlist:playlistID to playlistID 
+            uri = getUri(playlist)
+            # tweet back to person with the playlist id
+            api.update_status(f'Your playlist {query} has been created. It can be found here https://open.spotify.com/playlist/{uri}. Thank you.')
+
             
             
 

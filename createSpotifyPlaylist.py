@@ -277,7 +277,7 @@ class CreateSpotifyPlaylist:
         This function will create a playlist in spotify from the songs in
         the youtube playlist
         """
-        if (forUser):
+        if (forUser != None):
             playlistName = playlistName + ' for user ' + forUser
         else:
             pass
@@ -287,17 +287,6 @@ class CreateSpotifyPlaylist:
         newPlaylist = self.spotifyClient.user_playlist_create(user=os.environ['spotifyUserID'], name=playlistName, public=True, collaborative=False, description='a bot created this')
         
         return newPlaylist['id']
-
-
-    # def addYTTracksToSpotify(self):
-    #     """
-    #     This function will add all the tracks that were found in the youtube
-    #     playlist to the spotify playlist
-    #     """
-        
-
-
-        return 0
 
 
     def addTracksToPlaylist(self, type:str, playlistID:str):
@@ -338,9 +327,9 @@ def createFromYoutube(youtubeID:str):
     # get youtube songs
     newPlaylist.getTracksFromPlaylist(youtubeID)
     # create a new playlist to add them to
-    newPlaylist.createSpPlaylist()
+    newSpotifyPlaylistID =  newPlaylist.createSpPlaylist('random Name', None)
     # add tracks to new playlist
-    newPlaylist.addTracksToPlaylist('youtube')
+    newPlaylist.addTracksToPlaylist('youtube', newSpotifyPlaylistID)
 
     return 0
 
@@ -354,11 +343,11 @@ def createFromSearchQuery(query:str, name:str):
     # search for playlists
     newPlaylist.getSpotifyPlaylists(query)
     # create a new playlist 
-    newSpotifyPlaylistID = newPlaylist.createSpPlaylist(query)
+    newSpotifyPlaylistID = newPlaylist.createSpPlaylist(query, name)
     # add songs to playlist
     newPlaylist.addTracksToPlaylist('not youtube', newSpotifyPlaylistID)
 
-    return 0
+    return newSpotifyPlaylistID
 
 
 
