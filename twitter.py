@@ -38,10 +38,18 @@ def getSearchQuery(tweet:str):
     """
     This fuction will get 
     """
+    tweet = str(tweet)
     # removes the user (@user)
     tweet = re.sub(r'[@][a-zA-Z0-9_.+-]+', '', tweet)
 
     return tweet
+
+def ignoreFirst(myString):
+    ignoreThis = ['hello', 'world', 'from']
+    sList = myString.split(' ')
+    if ignoreThis == sList:
+        return True
+    return False
 
 
 def getUri(playlist):
@@ -74,15 +82,23 @@ def twitterReader():
             createFromYoutube(youtubeID)
         else:
             # get query from the tweet
-            query = getSearchQuery(mention)
-            # create the playlist
-            playlist = createFromSearchQuery(query, user)
-            # turn the playlist id from spotify:playlist:playlistID to playlistID 
-            uri = getUri(playlist)
-            # tweet back to person with the playlist id
-            api.update_status(f'Your playlist {query} has been created. It can be found here https://open.spotify.com/playlist/{uri}. Thank you.')
+            query = str(getSearchQuery(tweet))
+            # print(type(query))
+            # check to ignore first tweet
+            firstTweeet = ignoreFirst(query)
+            if firstTweeet == True:
+                pass
+            else:
+                # create the playlist
+                playlist = createFromSearchQuery(query, user)
+                # turn the playlist id from spotify:playlist:playlistID to playlistID 
+                uri = getUri(playlist)
+                # tweet back to person with the playlist id
+                api.update_status(f'@{user} Your playlist {query} has been created. It can be found here https://open.spotify.com/playlist/{uri} Thank you!')
 
             
             
+    print('done')
+    return 0
 
-    pass
+twitterReader()

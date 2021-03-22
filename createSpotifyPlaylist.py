@@ -239,7 +239,8 @@ class CreateSpotifyPlaylist:
         This function will get spotify playlists from a search query
         """
         # search for playlist that match the query on spotify
-        playlists =  self.spotifyClient.search(q=query, type='playlist', limit=50)
+        # print(query.text)
+        playlists =  self.spotifyClient.search(q=query, type='playlist', limit=20)
 
         # find the most popular songs from that playlist 
         for playlist in playlists['playlists']['items']:

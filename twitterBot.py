@@ -51,20 +51,36 @@ atMentions = api.mentions_timeline()
 #     print(mention.user.screen_name)
 
 
-
-def getUri(playlist):
-    # removes the user (@user)
-    if ''.join(list(playlist)[0:7]) == 'spotify':
-        playlist= re.sub(r'^spotify\Wplaylist\W', '', playlist)
-
-    return playlist
-
-
-uri = getUri('spotify:playlist:1ctWrfpts7PcV1qvbWZnIj')
-
-print(uri)
+def checkOther(myString):
+    ignoreThis = ['hello', 'world', 'from']
+    sList = myString.split(' ')
+    if ignoreThis == sList:
+        return True
+    return False
 
 
+print(checkOther('hello world from'))
+# def getUri(playlist):
+#     # removes the user (@user)
+#     if ''.join(list(playlist)[0:7]) == 'spotify':
+#         playlist= re.sub(r'^spotify\Wplaylist\W', '', playlist)
 
-# api.update_status('hello world from @_gg_bot')
+#     return playlist
+
+
+# uri = getUri('spotify:playlist:1ctWrfpts7PcV1qvbWZnIj')
+
+# print(uri)
+
+
+
+# api.update_status('2000s british rock @_gg_bot')
 # print(api.mentions_timeline())
+# atMentions = api.mentions_timeline()
+# for mention in atMentions:
+#     print(mention.text)
+#     print(mention.user.screen_name)
+#     print(' ')
+
+
+# print(atMentions)
