@@ -1,3 +1,12 @@
+"""
+- run pylint
+- use correct dosctrings: https://numpydoc.readthedocs.io/en/latest/format.html
+- use comments appropriately
+- add correct amount of spacing
+- consider breaking this module into several modules because it's big
+- replace print with logging
+"""
+
 import json
 import os
 import pickle
@@ -10,12 +19,6 @@ import requests
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import youtube_dl
-
-# TODO: use correct dosctrings: https://numpydoc.readthedocs.io/en/latest/format.html
-# TODO: use comments appropriately
-# TODO: add correct amount of spacing
-# TODO: consider breaking this module into several modules because it's big
-
 
 
 class CreateSpotifyPlaylist:
@@ -352,7 +355,7 @@ def createFromSearchQuery(query:str, name:str):
 
     # create a new playlist 
     newSpotifyPlaylistID = newPlaylist.createSpPlaylist(query, name)
-    
+
     # add songs to playlist
     newPlaylist.addTracksToPlaylist('not youtube', newSpotifyPlaylistID)
 
