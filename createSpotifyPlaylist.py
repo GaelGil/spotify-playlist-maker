@@ -11,10 +11,21 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import youtube_dl
 
+# TODO: use correct dosctrings: https://numpydoc.readthedocs.io/en/latest/format.html
+# TODO: use comments appropriately
+# TODO: add correct amount of spacing
+# TODO: consider breaking this module into several modules because it's big
+
 
 
 class CreateSpotifyPlaylist:
+    """
+    TODO: add class-level docstring
+    """
     def __init__(self):
+        """
+        TODO: add an init-level docstring
+        """
         self.youtubeClient = self.getYoutubeClient()
         self.allTheTrackInfo = {}
         self.spotifyClient = self.authSpotify()
@@ -22,16 +33,17 @@ class CreateSpotifyPlaylist:
         self.popularTracks = []
         self.popularList = []
 
+
     def getYoutubeClient(self):
         """
         This function will take care of the authorization and credentials.
         Once we have been authenticated it will return the youtube client 
         so we can use it in our other functions.
-
         """
         scopes = ["https://www.googleapis.com/auth/youtube.force-ssl"]
         credentials = None
-        # token.pickle stores the user's credentials from previously successful logins
+
+        # `token.pickle` stores the user's credentials from previously successful logins
         if os.path.exists('token.pickle'):
             print('Loading Credentials From File...')
             with open('token.pickle', 'rb') as token:
@@ -86,7 +98,6 @@ class CreateSpotifyPlaylist:
         with out the word vevo or music video.  
         """
         wordsToRemove = ['VEVO', '(Official Music Video)', '(Official)', '(Official Video)', '-']
-        # print(title)
 
         title = title.lower()
         artist = artist.lower()
@@ -104,26 +115,29 @@ class CreateSpotifyPlaylist:
             pass
 
 
-        # remove artist if its in the title
+        # TODO: decide if this is necessary - remove artist if its in the title
         # title = title.replace(artist, ' ')
-        # remove dashes from title
+
+        # Remove dashes from title
         title = title.replace('-', ' ')
-        # remove commas
+
+        # Remove commas
         title = title.replace(',', '')
-        # remove periods
+
+        # Remove periods
         title = title.replace('.', '')
-        # remove word from title
+
+        # Remove word from title
         title = title.replace('video oficial', ' ')
-        # remove any white space from the title
+
+        # Remove any white space from the title
         cleanTitle = re.sub(' +', ' ', title)
-        # # remove music from artist 
+
+        # TODO: decide is this is necessary - remove music from artist 
         # artist =  artist.replace('music', '')
-        # remove any white spcae from artist name
+    
+        # Remove any white spcae from artist name
         artist = re.sub(' +', ' ', artist)
-
-        
-        
-
 
         # title as a list of strings
         titleWords = cleanTitle.split()
@@ -134,14 +148,17 @@ class CreateSpotifyPlaylist:
         # print(artist)
         word = artist.split()
 
-        # only change name if its in this format `artistname` not `artist name`
-        if len(word) ==1:
+        # Only change name if its in this format `artistname` not `artist name`
+        # TODO: flatten the depth of if/else statements
+        if len(word) == 1:
             if len(titleWords) > 1:
                 # first two words of title where artist can be found
-                suspectedArtist = titleWords[0]+ titleWords[1]
+                suspectedArtist = titleWords[0] + titleWords[1]
+
                 if artist == suspectedArtist:
                     # change artist from `artistname` to `artist name`
-                    artist = titleWords[0] + " " + titleWords[1]
+                    artist = f"{titleWords[0]} {titleWords[1]}"
+
                     # remove artist from title
                     cleanTitle = ' '.join(titleWords[2:])
                 else:
@@ -150,8 +167,6 @@ class CreateSpotifyPlaylist:
                 pass
         else:
             pass
-
-        
 
 
         return cleanTitle, artist
@@ -162,7 +177,6 @@ class CreateSpotifyPlaylist:
         This function will get the tracks from the youtubeplaylist. We get the tracks from the
         youtube playlist by using the youtube api to search for the playlist using the playlist id.
         This will return some info (ie. artist, name of video)that we then use to search spotify.
-
         """
 
         # request youtube playlist data
@@ -175,7 +189,6 @@ class CreateSpotifyPlaylist:
 
         # a list to hold playlist data
         playlist_items = []
-
 
         # add items to playlist_items
         while request is not None:
@@ -197,7 +210,8 @@ class CreateSpotifyPlaylist:
                     self.uris.append(uri)
                 else:
                     pass
-            
+        
+        # TODO: add logger instead of print - https://docs.python.org/3/library/logging.html
         print('done getting info')
         return 0
 
@@ -263,11 +277,8 @@ class CreateSpotifyPlaylist:
         if len(trackInfo['tracks']['items']) != 0:
             uri = trackInfo['tracks']['items'][0]['uri']
         else: 
-            # print(trackName)
-            # print(artistName)
-            # print()
+            # TODO: add logging
             pass
-
 
         return uri
 
@@ -315,10 +326,6 @@ class CreateSpotifyPlaylist:
                 )
 
 
-
-
-
-
 def createFromYoutube(youtubeID:str):
     """
     This function will create a spotify playlist given a youtube playlist id
@@ -334,20 +341,19 @@ def createFromYoutube(youtubeID:str):
     return 0
 
 
-
 def createFromSearchQuery(query:str, name:str):
     """
     This function will create a spotify playlist given a search query
     """
     newPlaylist = CreateSpotifyPlaylist()
+
     # search for playlists
     newPlaylist.getSpotifyPlaylists(query)
+
     # create a new playlist 
     newSpotifyPlaylistID = newPlaylist.createSpPlaylist(query, name)
+    
     # add songs to playlist
     newPlaylist.addTracksToPlaylist('not youtube', newSpotifyPlaylistID)
 
     return newSpotifyPlaylistID
-
-
-
