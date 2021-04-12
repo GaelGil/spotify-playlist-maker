@@ -5,6 +5,7 @@ check out this project [here](www.twitter.com/rgterg) - some description of what
 ## Setup
 
 - how to get credentials setup for another used of this application
+- add `requirements.txt`
 
 ## Test 
 
