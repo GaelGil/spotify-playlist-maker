@@ -32,6 +32,21 @@ class CreateSpotifyPlaylist:
 
 
 
+    def get_spotify_playlists(self, query:str):
+        """
+        This function will get spotify playlists from a search query
+        """
+        # search for playlist that match the query on spotify
+        playlists =  self.spotify_client.search(q=query, type='playlist', limit=20)
+
+        # find the most popular songs from that playlist
+        for playlist in playlists['playlists']['items']:
+            playlist_uri = playlist['uri']
+            self.get_popular_songs(playlist_uri)
+        return 0
+
+
+
     def get_popular_songs(self, spotify_playlist_id:str):
         """
         This function takes in a string (spotify playlist uri) as its argument. It then gets that
@@ -56,28 +71,13 @@ class CreateSpotifyPlaylist:
 
 
 
-    def get_spotify_playlists(self, query:str):
-        """
-        This function will get spotify playlists from a search query
-        """
-        # search for playlist that match the query on spotify
-        playlists =  self.spotify_client.search(q=query, type='playlist', limit=20)
-
-        # find the most popular songs from that playlist
-        for playlist in playlists['playlists']['items']:
-            playlist_uri = playlist['uri']
-            self.get_popular_songs(playlist_uri)
-        return 0
-
-
-
     def create_spotify_playlist(self, playlist_name:str, for_user:str):
         """
         This function will create a playlist in spotify from the songs in
         the youtube playlist
         """
         if for_user is not None:
-            playlist_name = playlist_name + ' for user ' + for_user
+            playlist_name = f'{playlist_name} for user {for_user}'
         else:
             pass
 

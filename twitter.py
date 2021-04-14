@@ -42,9 +42,8 @@ def twitter_reader():
     tweet back with `not a valid playlist link`
     """
     at_mentions = api.mentions_timeline()
-    
     for mention in at_mentions:
-        tweet = mention.text 
+        tweet = mention.text
         user = mention.user.screen_name
         # get query from the tweet
         query = str(get_search_query(tweet))
