@@ -1,42 +1,17 @@
 import tweepy
 import os
 import re
-from createSpotifyPlaylist import createFromYoutube, createFromSearchQuery
+from createSpotifyPlaylist import create_spotify_playlist_from_search
 
 auth = tweepy.OAuthHandler(os.environ['consumer_key'], os.environ['consumer_secret_key'])
 auth.set_access_token(os.environ['access_token'], os.environ['access_token_secret'])
 api = tweepy.API(auth)
 
 
-
-def getPlaylistId(youtubePlaylist:str):
-    """
-    """
-
-    return 0 
-
-
-def isLink(text:str):
-    """
-    This function will check if a string is a youtube link
-    """
-    httpsHeader = 'https'
-    text = list(text)
-    text = ''.join(text[0:5])
-
-    if text == httpsHeader:
-        return True
-    else:
-        pass
-
-
-    return False
-
-
-
 def getSearchQuery(tweet:str):
     """
-    This fuction will get 
+    This fuction will remove the @mention to get the search query. For example
+    `@gg_bot a search query` will return 'a search query' 
     """
     tweet = str(tweet)
     # removes the user (@user)
@@ -90,7 +65,7 @@ def twitterReader():
                 pass
             else:
                 # create the playlist
-                playlist = createFromSearchQuery(query, user)
+                playlist = create_spotify_playlist_from_search(query, user)
                 # turn the playlist id from spotify:playlist:playlistID to playlistID 
                 uri = getUri(playlist)
                 # tweet back to person with the playlist id
