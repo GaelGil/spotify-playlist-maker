@@ -264,9 +264,6 @@ class CreateSpotifyPlaylist:
         if len(trackInfo['tracks']['items']) != 0:
             uri = trackInfo['tracks']['items'][0]['uri']
         else: 
-            # print(trackName)
-            # print(artistName)
-            # print()
             pass
 
 
