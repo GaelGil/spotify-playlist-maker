@@ -19,8 +19,8 @@ class CreateSpotifyPlaylist:
         self.popular_tracks_list = []
 
 
-
-    def auth_spotify(self):
+    @classmethod
+    def auth_spotify(cls):
         """
         This function will get the spotify client so we can use the api by authenticating. It will
         also set the scopes so we are able to use the tools that we need such as
