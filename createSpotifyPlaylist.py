@@ -72,14 +72,27 @@ class CreateSpotifyPlaylist:
 
 
     def create_spotify_playlist(self, playlist_name:str, for_user:str):
+        """Functio to create spotify playlist
+
+        This function will create a new spotify playlist with the title provied by 'playlist_name'
+        and `for_user`. Once we have created the new spotify playlist we return the playlist id for
+        later use.
+
+        Parameters
+        ----------
+        playlist_name : str
+            The name of the new spotify playlist.
+        for_user : str
+            The name of the user who requested a playlist.
+
+        Returns
+        -------
+        str
+            A string containg the new spotify playlist id.
+
         """
-        This function will create a playlist in spotify from the songs in
-        the youtube playlist
-        """
-        if for_user is not None:
-            playlist_name = f'{playlist_name} for user {for_user}'
-        else:
-            pass
+
+        playlist_name = f'{playlist_name} for user {for_user}'
 
         new_playlist = self.spotify_client.user_playlist_create(
             user=os.environ['spotifyUserID'],
