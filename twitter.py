@@ -1,5 +1,6 @@
 """
-This file gets the mentions on twitter and creates a spotify playlist then tweets it
+This file gets the mentions on twitter and creates a spotify playlist then retweets it 
+back to the user who requested it.
 """
 import os
 import re
@@ -12,9 +13,21 @@ api = tweepy.API(auth)
 
 
 def get_search_query(tweet:str):
-    """
+    """Functio to get search query from tweet
+
     This fuction will remove the @mention to get the search query. For example
     `@gg_bot a search query` will return 'a search query'
+
+    Parameters
+    ----------
+    tweet: str
+        A string containg a search query and twitter name
+
+    Returns
+    -------
+    str
+        The same input string without the twitter username
+
     """
     tweet = str(tweet)
     # removes the user (@user)
@@ -24,8 +37,21 @@ def get_search_query(tweet:str):
 
 
 def get_uri(playlist):
-    """
-    This will match the spotify uri code
+    """Functio to get a spotify playlist uri (playlist id)
+
+    This fuction will remove the 'spotify:playlist:' from 'spotify:playlist:uri` and return
+    `uri` (id).
+
+    Parameters
+    ----------
+    playlist: str
+        A string containg a spotify playlist uri
+
+    Returns
+    -------
+    str
+        The same input string without `spotify:playlist:`
+
     """
     if ''.join(list(playlist)[0:7]) == 'spotify':
         playlist= re.sub(r'^spotify\Wplaylist\W', '', playlist)
@@ -41,10 +67,11 @@ def twitter_reader():
     we will create a spotify playlist from it. If the link is not valid then it will
     tweet back with `not a valid playlist link`
     """
+    # check at mentions
     at_mentions = api.mentions_timeline()
     for mention in at_mentions:
-        tweet = mention.text
-        user = mention.user.screen_name
+        tweet = mention.text # select text
+        user = mention.user.screen_name #select username
         # get query from the tweet
         query = str(get_search_query(tweet))
         if str(user) != '@gg_bot':

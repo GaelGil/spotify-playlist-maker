@@ -182,29 +182,29 @@ class CreateSpotifyPlaylist:
 
 
 def create_spotify_playlist_from_search(query:str, name:str):
-        """Functio to create a new spotify playlist for a user
+    """Functio to create a new spotify playlist for a user
 
-        This function will create a new spotify playlist with the title provied by 'query'
-        and `name`. The first step in creating a playlist is to search for spotify
-        playlists in `get_spotify_playlists` with our search query. This function will
-        fill a list of tracks to later use. The next step is to create a spotify playlist
-        with using the parameters in `create_spotify_playlist` which will return an id.
-        Once that is done we can finally add the tracks with the id in
-        `add_tracks_to_playlist`. 
+    This function will create a new spotify playlist with the title provied by 'query'
+    and `name`. The first step in creating a playlist is to search for spotify
+    playlists in `get_spotify_playlists` with our search query. This function will
+    fill a list of tracks to later use. The next step is to create a spotify playlist
+    with using the parameters in `create_spotify_playlist` which will return an id.
+    Once that is done we can finally add the tracks with the id in
+    `add_tracks_to_playlist`.
 
-        Parameters
-        ----------
-        query : str
-            The search query to search on spotify
-        name : str
-            The name of the user who requested a playlist.
+    Parameters
+    ----------
+    query : str
+        The search query to search on spotify
+    name : str
+        The name of the user who requested a playlist.
 
-        Returns
-        -------
-        str
-            A string containg the new spotify playlist id.
+    Returns
+    -------
+    str
+        A string containg the new spotify playlist id.
 
-        """
+    """
     new_playlist = CreateSpotifyPlaylist()
     # search for playlists
     new_playlist.get_spotify_playlists(query)
