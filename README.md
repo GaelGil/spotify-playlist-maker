@@ -36,3 +36,4 @@ simply run `python3 createSpotifyPlaylist.py` and check your spotify account for
 
 If you want to run this with twitter. All you need to do is run `python3 twiiter.py`.  This will check
 your twitter for @mentions and create spotify playlists based on those. 
+
