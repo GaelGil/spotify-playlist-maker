@@ -1,9 +1,10 @@
 """
-- use comments appropriately
+This module is used to create a spotify playlist
 """
 import os
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
+
 
 
 class CreateSpotifyPlaylist:
