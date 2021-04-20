@@ -1,5 +1,5 @@
 """
-This file gets the mentions on twitter and creates a spotify playlist then retweets it 
+This file gets the mentions on twitter and creates a spotify playlist then retweets it
 back to the user who requested it.
 """
 import os
