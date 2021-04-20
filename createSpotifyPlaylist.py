@@ -6,6 +6,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
 
+
 class CreateSpotifyPlaylist:
     """
     TODO: add class-level docstring
@@ -26,6 +27,7 @@ class CreateSpotifyPlaylist:
         """
         self.spotify_client = self.auth_spotify()
         self.popular_tracks_list = []
+
 
 
     @classmethod
