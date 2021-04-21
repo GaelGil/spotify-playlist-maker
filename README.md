@@ -35,8 +35,6 @@ Install the requirements:
 
 - `pip install -r requirements.txt`
 
-Source 
-
 Test it out with Twitter:
 
 - `python twitter.py`
