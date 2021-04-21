@@ -1,5 +1,5 @@
 """
-This file gets the mentions on twitter and creates a spotify playlist then retweets it
+This module gets the mentions on twitter and creates a spotify playlist then retweets it
 back to the user who requested it.
 """
 import os
@@ -7,12 +7,13 @@ import re
 import tweepy
 from createSpotifyPlaylist import create_spotify_playlist_from_search
 
+
 auth = tweepy.OAuthHandler(os.environ['consumer_key'], os.environ['consumer_secret_key'])
 auth.set_access_token(os.environ['access_token'], os.environ['access_token_secret'])
 api = tweepy.API(auth)
 
 
-def get_search_query(tweet:str):
+def get_search_query(tweet: str) -> str:
     """Functio to get search query from tweet
 
     This fuction will remove the @mention to get the search query. For example
@@ -35,9 +36,8 @@ def get_search_query(tweet:str):
     return tweet
 
 
-
-def get_uri(playlist):
-    """Functio to get a spotify playlist uri (playlist id)
+def get_uri(playlist: str) -> str:
+    """Function to get a spotify playlist uri (playlist id)
 
     This fuction will remove the 'spotify:playlist:' from 'spotify:playlist:uri` and return
     `uri` (id).
@@ -57,7 +57,6 @@ def get_uri(playlist):
         playlist= re.sub(r'^spotify\Wplaylist\W', '', playlist)
 
     return playlist
-
 
 
 def twitter_reader():
