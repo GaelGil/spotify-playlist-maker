@@ -31,7 +31,7 @@ class CreateSpotifyPlaylist:
 
     @classmethod
     def auth_spotify(cls):
-        """Functio to go authenticate spotify
+        """Function to go authenticate spotify
 
         This function will get the spotify client so we can use the api by authenticating. It will
         also set the scopes so we are able to use the tools that we need such as
@@ -53,11 +53,11 @@ class CreateSpotifyPlaylist:
 
 
     def get_spotify_playlists(self, query:str):
-        """Functio to search spotify for playlist
+        """Function to search spotify for playlists
 
         This function will search spotify for playlists with the given query. For every playlist
-        we will get its most popular songs so we call the function `get_popular_songs`. This
-        function has no returns
+        we will get its most popular songs to do that we call the function `get_popular_songs`.
+        This function has no returns.
 
         Parameters
         ----------
@@ -81,9 +81,9 @@ class CreateSpotifyPlaylist:
 
 
     def get_popular_songs(self, spotify_playlist_id:str):
-        """Functio to get most popular songs from a spotify playlist
+        """Function to get most popular songs from a spotify playlist
 
-        This function will go through a spotify playlist and select the most popular tracks on thet
+        This function will go through a spotify playlist and select the most popular tracks on the
         playlist. The popular tracks will get added to the class variable `popular_tracks_list`.
         This function has no returns
 
@@ -164,6 +164,7 @@ class CreateSpotifyPlaylist:
         None
 
         """
+
         list_one = self.popular_tracks_list[:len(self.popular_tracks_list)//2]
         list_two = self.popular_tracks_list[len(self.popular_tracks_list)//2:]
 
@@ -206,6 +207,7 @@ def create_spotify_playlist_from_search(query:str, name:str):
         A string containg the new spotify playlist id.
 
     """
+    
     new_playlist = CreateSpotifyPlaylist()
     # search for playlists
     new_playlist.get_spotify_playlists(query)
