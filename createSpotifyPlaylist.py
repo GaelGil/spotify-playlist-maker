@@ -1,5 +1,12 @@
 """
-This module is used to create a spotify playlist
+This module is used to create spotify playlist from other playlists. This is possible by using the
+spotify api which allows us to search and retrive data. We use the spotify playlists to search for
+playlist with a provided search query. All the playlists that are found will be search for its most
+popular songs. Those songs will then be added to a new spotify playlist which will be craeted here.
+This module could be run on its own to create playlist for whoever wants it or could also be run
+using the module `twitter.py` thats in this project. What this will do is check the users twitter
+timeline and create playlists by checking @mentions and using those as search querys. This will
+require both the spotify and twitter api.
 """
 import os
 import spotipy
@@ -9,8 +16,31 @@ from spotipy.oauth2 import SpotifyOAuth
 
 class CreateSpotifyPlaylist:
     """
-    TODO: add class-level docstring
+    A class used to represent an Animal
+
+    ...
+
+    Attributes
+    ----------
+    popular_tracks : list
+        A list of popular tracks on spotify
+
+    Methods
+    -------
+    get_spotify_playlists(self, query:str)
+        Searches spotify for playlists
+
+    get_popular_songs(self, spotify_playlist_id:str):
+        Gets most popular songs from spotify playlist
+
+    create_spotify_playlist(self, playlist_name:str, for_user:str)
+        Creates a new spotify playlists using a name and a users name
+
+    add_tracks_to_playlist(self, playlist_id:str)
+        Adds song to a spotify playlists
+
     """
+
     def __init__(self):
         """Init function
 
@@ -26,7 +56,7 @@ class CreateSpotifyPlaylist:
 
         """
         self.spotify_client = self.auth_spotify()
-        self.popular_tracks_list = []
+        self.popular_tracks = []
 
 
     @classmethod
@@ -49,7 +79,6 @@ class CreateSpotifyPlaylist:
         scope = "user-library-read,user-top-read,playlist-modify-public"
         spotify_client = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
         return spotify_client
-
 
 
     def get_spotify_playlists(self, query:str):
@@ -79,13 +108,12 @@ class CreateSpotifyPlaylist:
         return 0
 
 
-
     def get_popular_songs(self, spotify_playlist_id:str):
         """Function to get most popular songs from a spotify playlist
 
         This function will go through a spotify playlist and select the most popular tracks on the
-        playlist. The popular tracks will get added to the class variable `popular_tracks_list`.
-        This function has no returns
+        playlist. The popular tracks will get added to the class variable `popular_tracks`. This
+        function has no returns
 
         Parameters
         ----------
@@ -110,13 +138,12 @@ class CreateSpotifyPlaylist:
                 popularity = track['track']['popularity'] # get popularity number
                 uri = track['track']['uri'] # get uri for the track
                 # add popular tracks to list of popularity
-                if uri not in self.popular_tracks_list and popularity > most_popular:
-                    self.popular_tracks_list.append(uri)
+                if uri not in self.popular_tracks and popularity > most_popular:
+                    self.popular_tracks.append(uri)
         return 0
 
 
-
-    def create_spotify_playlist(self, playlist_name:str, for_user:str):
+    def create_spotify_playlist(self, playlist_name:str, for_user:str) -> str:
         """Functio to create spotify playlist
 
         This function will create a new spotify playlist with the title provied by 'playlist_name'
@@ -148,7 +175,6 @@ class CreateSpotifyPlaylist:
         return new_playlist['id']
 
 
-
     def add_tracks_to_playlist(self, playlist_id:str):
         """Functio to add songs to a spotify playlist
 
@@ -165,8 +191,8 @@ class CreateSpotifyPlaylist:
 
         """
 
-        list_one = self.popular_tracks_list[:len(self.popular_tracks_list)//2]
-        list_two = self.popular_tracks_list[len(self.popular_tracks_list)//2:]
+        list_one = self.popular_tracks[:len(self.popular_tracks)//2]
+        list_two = self.popular_tracks[len(self.popular_tracks)//2:]
 
         self.spotify_client.playlist_add_items(
             playlist_id=playlist_id,
@@ -182,8 +208,7 @@ class CreateSpotifyPlaylist:
         return 0
 
 
-
-def create_spotify_playlist_from_search(query:str, name:str):
+def create_spotify_playlist_from_search(query:str, name:str) -> str:
     """Functio to create a new spotify playlist for a user
 
     This function will create a new spotify playlist with the title provied by 'query'
@@ -207,7 +232,7 @@ def create_spotify_playlist_from_search(query:str, name:str):
         A string containg the new spotify playlist id.
 
     """
-    
+
     new_playlist = CreateSpotifyPlaylist()
     # search for playlists
     new_playlist.get_spotify_playlists(query)
