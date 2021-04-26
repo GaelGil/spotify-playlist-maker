@@ -16,9 +16,8 @@ from spotipy.oauth2 import SpotifyOAuth
 
 class CreateSpotifyPlaylist:
     """
-    A class used to represent an Animal
+    A class used to communicate with the Spotify api.
 
-    ...
 
     Attributes
     ----------
@@ -53,7 +52,6 @@ class CreateSpotifyPlaylist:
         Returns
         -------
         None
-
         """
         self.spotify_client = self.auth_spotify()
         self.popular_tracks = []
@@ -74,14 +72,13 @@ class CreateSpotifyPlaylist:
         -------
         str
             The spotify client
-
         """
         scope = "user-library-read,user-top-read,playlist-modify-public"
         spotify_client = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
         return spotify_client
 
 
-    def get_spotify_playlists(self, query:str):
+    def get_spotify_playlists(self, query: str) -> None:
         """Function to search spotify for playlists
 
         This function will search spotify for playlists with the given query. For every playlist
@@ -105,10 +102,10 @@ class CreateSpotifyPlaylist:
         for playlist in playlists['playlists']['items']:
             playlist_uri = playlist['uri']
             self.get_popular_songs(playlist_uri)
-        return 0
+        return
 
 
-    def get_popular_songs(self, spotify_playlist_id:str):
+    def get_popular_songs(self, spotify_playlist_id:str) -> None:
         """Function to get most popular songs from a spotify playlist
 
         This function will go through a spotify playlist and select the most popular tracks on the
@@ -140,7 +137,7 @@ class CreateSpotifyPlaylist:
                 # add popular tracks to list of popularity
                 if uri not in self.popular_tracks and popularity > most_popular:
                     self.popular_tracks.append(uri)
-        return 0
+        return
 
 
     def create_spotify_playlist(self, playlist_name:str, for_user:str) -> str:
@@ -175,8 +172,8 @@ class CreateSpotifyPlaylist:
         return new_playlist['id']
 
 
-    def add_tracks_to_playlist(self, playlist_id:str):
-        """Functio to add songs to a spotify playlist
+    def add_tracks_to_playlist(self, playlist_id: str) -> None:
+        """Function to add songs to a spotify playlist
 
         This function will addd tracks to a playlist. This function has no returns
 
@@ -205,11 +202,11 @@ class CreateSpotifyPlaylist:
             position=None
         )
 
-        return 0
+        return
 
 
 def create_spotify_playlist_from_search(query:str, name:str) -> str:
-    """Functio to create a new spotify playlist for a user
+    """Function to create a new spotify playlist for a user
 
     This function will create a new spotify playlist with the title provied by 'query'
     and `name`. The first step in creating a playlist is to search for spotify
