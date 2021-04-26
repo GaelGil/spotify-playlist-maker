@@ -5,7 +5,7 @@ Check out this project [here](https://twitter.com/_gg_bot). This is a link to my
 
 ## Setup Info
 
-This whole project requires to have a Twitter developer account and Spotify developer account. However you can choose to only have a spotify developer account and run this for yourself without the `twitter.py`. Lastly all the access tokens given by the developer accounts will need to be added to your `.bash_profile` or `.zshrc` file. Make sure to name them as they are in the `twitter.py` and `createSpotifyPlaylist.py` files for easy use. Also don't  forget to source the files. 
+This whole project requires you to have a Twitter developer account and Spotify developer account. However you can choose to only have a spotify developer account and run this for yourself without the `twitter.py`. Lastly all the access tokens given by the developer accounts will need to be added to your `.bash_profile` or `.zshrc` file. Make sure to name them as they are in the `twitter.py` and `createSpotifyPlaylist.py` files for easy use. Also don't  forget to source the files. 
 
 
 ## Setup: Twitter
