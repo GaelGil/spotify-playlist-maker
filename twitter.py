@@ -28,7 +28,6 @@ def get_search_query(tweet: str) -> str:
     -------
     str
         The same input string without the twitter username
-
     """
     tweet = str(tweet)
     # removes the user (@user)
@@ -73,7 +72,7 @@ def twitter_reader():
         user = mention.user.screen_name #select username
         # get query from the tweet
         query = str(get_search_query(tweet))
-        if str(user) != '@gg_bot':
+        if str(user) != '@_gg_bot':
             # create the playlist
             playlist = create_spotify_playlist_from_search(query, user)
             # turn the playlist id from spotify:playlist:playlistID to playlistID

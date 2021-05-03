@@ -9,6 +9,7 @@ timeline and create playlists by checking @mentions and using those as search qu
 require both the spotify and twitter api.
 """
 import os
+import time
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
@@ -17,7 +18,6 @@ from spotipy.oauth2 import SpotifyOAuth
 class CreateSpotifyPlaylist:
     """
     A class used to communicate with the Spotify api.
-
 
     Attributes
     ----------
@@ -37,12 +37,11 @@ class CreateSpotifyPlaylist:
 
     add_tracks_to_playlist(self, playlist_id:str)
         Adds song to a spotify playlists
-
     """
 
     def __init__(self):
-        """Init function
-
+        """
+        Init function
         This function will call the class function `auth_spotify` and create a list for later use.
 
         Parameters
@@ -59,8 +58,8 @@ class CreateSpotifyPlaylist:
 
     @classmethod
     def auth_spotify(cls):
-        """Function to go authenticate spotify
-
+        """
+        Function to authenticate spotify
         This function will get the spotify client so we can use the api by authenticating. It will
         also set the scopes so we are able to use the tools that we need such as
         `playlist-modify-public` to create public spotify playlist
@@ -79,8 +78,8 @@ class CreateSpotifyPlaylist:
 
 
     def get_spotify_playlists(self, query: str) -> None:
-        """Function to search spotify for playlists
-
+        """
+        Function to search spotify for playlists
         This function will search spotify for playlists with the given query. For every playlist
         we will get its most popular songs to do that we call the function `get_popular_songs`.
         This function has no returns.
@@ -93,7 +92,6 @@ class CreateSpotifyPlaylist:
         Returns
         -------
         None
-
         """
         # search for playlist that match the query on spotify
         playlists =  self.spotify_client.search(q=query, type='playlist', limit=20)
@@ -185,22 +183,33 @@ class CreateSpotifyPlaylist:
         Returns
         -------
         None
-
         """
+        # chceck if playlist is more than 100 songs
+        if len(self.popular_tracks) >= 100:
+            some_list = [] # list of lists of tracks
+            current_list = [] # list to hold 100 tracks
+            # create a list with tracks
+            for i in self.popular_tracks:
+                current_list.append(i)
+                # once it reaches 100 add those list to another list and clear our initial list
+                if len(current_list) >= 100 or len(current_list)%1 == 1:
+                    some_list.append(current_list)
+                    current_list = []
+            # add all tracks to playlist in batches
+            for i in some_list:
+                self.spotify_client.playlist_add_items(
+                    playlist_id=playlist_id,
+                    items=i,
+                )
+                print('Waiting 15 sec for next request')
+                time.sleep(15)
+        # add tracks all at once if not more than 100
+        else:
+            self.spotify_client.playlist_add_items(
+                playlist_id=playlist_id,
+                items=self.popular_tracks,
+            )
 
-        list_one = self.popular_tracks[:len(self.popular_tracks)//2]
-        list_two = self.popular_tracks[len(self.popular_tracks)//2:]
-
-        self.spotify_client.playlist_add_items(
-            playlist_id=playlist_id,
-            items=list_one,
-            position=None
-        )
-        self.spotify_client.playlist_add_items(
-            playlist_id=playlist_id,
-            items=list_two,
-            position=None
-        )
 
         return
 

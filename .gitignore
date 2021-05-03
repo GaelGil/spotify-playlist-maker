@@ -2,5 +2,7 @@ client_secrets.json
 .cache
 token.pickle
 *env
-*test
+*rand
 **/**__pycache__
+.pytest_cache
+
