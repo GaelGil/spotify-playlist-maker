@@ -82,4 +82,3 @@ def twitter_reader():
             api.update_status(retweet)
     return 0
 
-twitter_reader()

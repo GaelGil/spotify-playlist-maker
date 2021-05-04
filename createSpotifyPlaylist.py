@@ -96,11 +96,10 @@ class CreateSpotifyPlaylist:
         # search for playlist that match the query on spotify
         playlists =  self.spotify_client.search(q=query, type='playlist', limit=20)
 
-        # find the most popular songs from that playlist
+        # find the most popular songs in each playlist
         for playlist in playlists['playlists']['items']:
             playlist_uri = playlist['uri']
             self.get_popular_songs(playlist_uri)
-        return
 
 
     def get_popular_songs(self, spotify_playlist_id:str) -> None:
@@ -132,10 +131,9 @@ class CreateSpotifyPlaylist:
             else:
                 popularity = track['track']['popularity'] # get popularity number
                 uri = track['track']['uri'] # get uri for the track
-                # add popular tracks to list of popularity
+                # add popular tracks to list of popularity and check for duplicates
                 if uri not in self.popular_tracks and popularity > most_popular:
                     self.popular_tracks.append(uri)
-        return
 
 
     def create_spotify_playlist(self, playlist_name:str, for_user:str) -> str:
@@ -158,9 +156,10 @@ class CreateSpotifyPlaylist:
             A string containg the new spotify playlist id.
 
         """
-
+        # create the name of the playlist
         playlist_name = f'{playlist_name} for user {for_user}'
 
+        # create a new playlist
         new_playlist = self.spotify_client.user_playlist_create(
             user=os.environ['spotifyUserID'],
             name=playlist_name, public=True,
@@ -184,14 +183,14 @@ class CreateSpotifyPlaylist:
         -------
         None
         """
-        # chceck if playlist is more than 100 songs
+        # chceck if playlist is more than 100 tracks
         if len(self.popular_tracks) >= 100:
             some_list = [] # list of lists of tracks
             current_list = [] # list to hold 100 tracks
-            # create a list with tracks
+            # add tracks to current_list
             for i in self.popular_tracks:
                 current_list.append(i)
-                # once it reaches 100 add those list to another list and clear our initial list
+                # once it reaches 100 add current_list to main_list and clear current_list
                 if len(current_list) >= 100 or len(current_list)%1 == 1:
                     some_list.append(current_list)
                     current_list = []
@@ -201,17 +200,14 @@ class CreateSpotifyPlaylist:
                     playlist_id=playlist_id,
                     items=i,
                 )
-                print('Waiting 15 sec for next request')
-                time.sleep(15)
+                print('Waiting 5 sec for next request')
+                time.sleep(5)
         # add tracks all at once if not more than 100
         else:
             self.spotify_client.playlist_add_items(
                 playlist_id=playlist_id,
                 items=self.popular_tracks,
             )
-
-
-        return
 
 
 def create_spotify_playlist_from_search(query:str, name:str) -> str:
