@@ -14,12 +14,13 @@ def get_spotify_playlists(self, query: str) -> None:
     None
     """
     # search for playlist that match the query on spotify
-    playlists =  self.spotify_client.search(q=query, type='playlist', limit=20)
+    # playlists =  self.spotify_client.search(q=query, type='playlist', limit=20)
     # find the most popular songs in each playlist
     for playlist in playlists['playlists']['items']:
         playlist_uri = playlist['uri']
-        self.get_popular_songs(playlist_uri)
-    return
+        get_popular_songs(playlist_uri)
+
+    return playlists['playlists']['items']['uri']
 
 def get_popular_songs(self, spotify_playlist_id:str) -> None:
     """
@@ -37,8 +38,9 @@ def get_popular_songs(self, spotify_playlist_id:str) -> None:
     None
     """
     # get spotify playlist
-    playlist_tracks = self.spotify_client.playlist(playlist_id=spotify_playlist_id)
+    # playlist_tracks = self.spotify_client.playlist(playlist_id=spotify_playlist_id)
     # select the first tracks popularity number
+    popular_tracks = []
     most_popular = playlist_tracks['tracks']['items'][0]['track']['popularity']
     # search for most popular tracks
     for track in playlist_tracks['tracks']['items']:
@@ -48,9 +50,9 @@ def get_popular_songs(self, spotify_playlist_id:str) -> None:
             popularity = track['track']['popularity'] # get popularity number
             uri = track['track']['uri'] # get uri for the track
             # add popular tracks to list of popularity and check for duplicates
-            if uri not in self.popular_tracks and popularity > most_popular:
-                self.popular_tracks.append(uri)
-    return
+            if uri not in popular_tracks and popularity > most_popular:
+                popular_tracks.append(uri)
+    return popular_tracks
 
 
 def add_tracks_to_playlist(self, playlist_id: str) -> None:
@@ -66,29 +68,20 @@ def add_tracks_to_playlist(self, playlist_id: str) -> None:
     -------
     None
     """
+    tracks_list = []
     # chceck if playlist is more than 100 songs
-    if len(self.popular_tracks) >= 100:
+    if len(popular_tracks) >= 100:
         some_list = [] # list of lists of tracks
         current_list = [] # list to hold 100 tracks
         # create a list with tracks
-        for i in self.popular_tracks:
+        for i in popular_tracks:
             current_list.append(i)
             # once it reaches 100 add those list to another list and clear our initial list
             if len(current_list) >= 100 or len(current_list)%1 == 1:
                 some_list.append(current_list)
                 current_list = []
-        # add all tracks to playlist in batches
-        for i in some_list:
-            self.spotify_client.playlist_add_items(
-                playlist_id=playlist_id,
-                items=i,
-            )
+
             print('Waiting 15 sec for next request')
-            time.sleep(15)
-    # add tracks all at once if not more than 100
-    else:
-        self.spotify_client.playlist_add_items(
-            playlist_id=playlist_id,
-            items=self.popular_tracks,
-        )
-    return
+            time.sleep(5)
+
+    return tracks_list

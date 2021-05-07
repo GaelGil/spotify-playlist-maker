@@ -94,7 +94,7 @@ class CreateSpotifyPlaylist:
         None
         """
         # search for playlist that match the query on spotify
-        playlists =  self.spotify_client.search(q=query, type='playlist', limit=20)
+        playlists =  self.spotify_client.search(q=query, type='playlist', limit=5)
 
         # find the most popular songs in each playlist
         for playlist in playlists['playlists']['items']:
@@ -238,9 +238,13 @@ def create_spotify_playlist_from_search(query:str, name:str) -> str:
     new_playlist = CreateSpotifyPlaylist()
     # search for playlists
     new_playlist.get_spotify_playlists(query)
+    print(new_playlist.popular_tracks[0:20])
     # create a new playlist
-    new_spotify_playlist_id = new_playlist.create_spotify_playlist(query, name)
+    # new_spotify_playlist_id = new_playlist.create_spotify_playlist(query, name)
     # add songs to playlist
-    new_playlist.add_tracks_to_playlist(new_spotify_playlist_id)
+    # new_playlist.add_tracks_to_playlist(new_spotify_playlist_id)
 
-    return new_spotify_playlist_id
+    # return new_spotify_playlist_id
+
+
+create_spotify_playlist_from_search('lofi', 'user')
