@@ -238,7 +238,7 @@ def create_spotify_playlist_from_search(query:str, name:str) -> str:
     new_playlist = CreateSpotifyPlaylist()
     # search for playlists
     new_playlist.get_spotify_playlists(query)
-    print(new_playlist.popular_tracks[0:20])
+    print(new_playlist.popular_tracks)
     # create a new playlist
     # new_spotify_playlist_id = new_playlist.create_spotify_playlist(query, name)
     # add songs to playlist

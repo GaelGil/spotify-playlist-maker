@@ -52,7 +52,7 @@ def get_uri(playlist: str) -> str:
         The same input string without `spotify:playlist:`
 
     """
-    return playlist= re.sub(r'^spotify\Wplaylist\W', '', playlist)
+    return playlist = re.sub(r'^spotify\Wplaylist\W', '', playlist)
 
 
 def twitter_reader():
