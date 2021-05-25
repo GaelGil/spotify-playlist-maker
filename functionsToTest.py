@@ -1,4 +1,4 @@
-def get_spotify_playlists(self, query: str) -> None:
+def get_spotify_playlists(playlists) -> list:
     """
     Function to search spotify for playlists
     This function will search spotify for playlists with the given query. For every playlist
@@ -16,13 +16,17 @@ def get_spotify_playlists(self, query: str) -> None:
     # search for playlist that match the query on spotify
     # playlists =  self.spotify_client.search(q=query, type='playlist', limit=20)
     # find the most popular songs in each playlist
+
+    playlist_uris = []
     for playlist in playlists['playlists']['items']:
         playlist_uri = playlist['uri']
-        get_popular_songs(playlist_uri)
+        # get_popular_songs(playlist_uri)
+        playlist_uris.append(playlist_uri)
 
-    return playlists['playlists']['items']['uri']
+    print(playlist_uris)
+    return playlist_uris
 
-def get_popular_songs(self, spotify_playlist_id:str) -> None:
+def get_popular_songs(spotify_playlist_id:str) -> None:
     """
     Function to get most popular songs from a spotify playlist
     This function will go through a spotify playlist and select the most popular tracks on the
