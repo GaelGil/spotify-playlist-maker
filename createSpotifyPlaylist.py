@@ -123,10 +123,13 @@ class CreateSpotifyPlaylist:
         playlist_tracks = self.spotify_client.playlist(playlist_id=spotify_playlist_id)
         # select the first tracks popularity number
         most_popular = playlist_tracks['tracks']['items'][0]['track']['popularity']
-        f = open("data.json", "a")
-        f.write(str(playlist_tracks))
-        f.close()
 
+        # print(playlist_tracks['tracks']['items'][0:15])
+        # print(len(playlist_tracks['tracks']['items'][0:20]))
+        
+        f = open("demofile2.txt", "a")
+        f.write(str(playlist_tracks['tracks']['items'][0:20]))
+        f.close()
         # search for most popular tracks
         for track in playlist_tracks['tracks']['items']:
             if track['track'] is None:
