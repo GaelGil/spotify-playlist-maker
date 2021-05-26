@@ -2,7 +2,8 @@ import json
 import re
 import pytest
 from functionsToTest import get_spotify_playlists, get_popular_songs, add_tracks_to_playlist
-  
+
+
 # Accessing supplied data
 playlist_data_file = open('./data/playlist_data.json',)
 playlist_data = json.load(playlist_data_file)
@@ -12,47 +13,15 @@ track_data_file = open('./data/tracks_data.json',)
 track_data = json.load(track_data_file)
 
 
-def validate_uri(uri: str, type: str) -> bool:
-    valid_uri = False
-    playlist_pattern = re.compile(r'^spotify\Wplaylist\W')
-    track_pattern = re.compile(r'^spotify\Wtrack\W')
-
-    if type == 'playlist':
-        uri_clean = playlist_pattern.match(uri)
-    else:
-        uri_clean = re.sub(r'^spotify\Wtrack\W', '', uri)
-    
-    if uri_clean:
-        valid_uri = True
-    
-    # print(uri_clean)
-
-    return valid_uri
-
-
-
-# assert that this function gets spotify playlists uri. Match a playlist uri using regex
+# get_spotify_playlists return a list of playlist uris from a dictrionary of data
 def test_get_spotify_playlists():
-    playlists = get_spotify_playlists(playlist_data)
-    # print(playlists)
-    assert validate_uri(playlists) == [True] * len(playlists)
+    assert get_spotify_playlists(playlist_data) == playlist_uris
 
+# get_popular_songs returns a list of popular tracks from a dictionary of data
+# def test_get_popular_songs():
+    # assert get_popular_songs(data of a playlist dictionary) == a list of songs
 
-# # assert that this function returns a list of tracks
-# def test_get_popular_songs(list: track_data['tracks']):
-#     tracks = get_popular_songs(track_data)
-#     for i in tracks:
-#         assert validate_uri(i, 'track') == True
-
-
-
-
-# @pytest.mark.parametrize([playlist_data], playlist_uris)
-# def test_get_spotify_playlists(input_data: list, output_data:list):
-#     assert get_spotify_playlists(input_data) == output_data
-
-
-# assert that this function returns a list of lists
+# # add_tracks_to_playlist returns a list of of lists of tracks created from a list of tracks
 # def test_add_tracks_to_playlist():
-    # assert
+#     assert add_tracks_to_playlist(list of tracks) == a list or lists of lists
 

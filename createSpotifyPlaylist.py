@@ -123,6 +123,9 @@ class CreateSpotifyPlaylist:
         playlist_tracks = self.spotify_client.playlist(playlist_id=spotify_playlist_id)
         # select the first tracks popularity number
         most_popular = playlist_tracks['tracks']['items'][0]['track']['popularity']
+        f = open("data.json", "a")
+        f.write(str(playlist_tracks))
+        f.close()
 
         # search for most popular tracks
         for track in playlist_tracks['tracks']['items']:
@@ -238,7 +241,7 @@ def create_spotify_playlist_from_search(query:str, name:str) -> str:
     new_playlist = CreateSpotifyPlaylist()
     # search for playlists
     new_playlist.get_spotify_playlists(query)
-    print(new_playlist.popular_tracks)
+    # print(new_playlist.popular_tracks)
     # create a new playlist
     # new_spotify_playlist_id = new_playlist.create_spotify_playlist(query, name)
     # add songs to playlist

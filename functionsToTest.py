@@ -23,7 +23,6 @@ def get_spotify_playlists(playlists) -> list:
         # get_popular_songs(playlist_uri)
         playlist_uris.append(playlist_uri)
 
-    print(playlist_uris)
     return playlist_uris
 
 def get_popular_songs(spotify_playlist_id:str) -> None:
