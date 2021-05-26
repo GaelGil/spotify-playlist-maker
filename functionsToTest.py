@@ -16,7 +16,6 @@ def get_spotify_playlists(playlists) -> list:
     # search for playlist that match the query on spotify
     # playlists =  self.spotify_client.search(q=query, type='playlist', limit=20)
     # find the most popular songs in each playlist
-
     playlist_uris = []
     for playlist in playlists['playlists']['items']:
         playlist_uri = playlist['uri']
@@ -58,7 +57,7 @@ def get_popular_songs(spotify_playlist_id:str) -> None:
     return popular_tracks
 
 
-def add_tracks_to_playlist(self, playlist_id: str) -> None:
+def add_tracks_to_playlist(popular_tracks: list) -> None:
     """
     Function to add songs to a spotify playlist
     This function will addd tracks to a playlist. This function has no returns
@@ -86,5 +85,7 @@ def add_tracks_to_playlist(self, playlist_id: str) -> None:
 
             print('Waiting 15 sec for next request')
             time.sleep(5)
+    else:
+        tracks_list = popular_tracks['tracks']
 
     return tracks_list

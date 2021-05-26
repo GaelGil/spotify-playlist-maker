@@ -17,11 +17,12 @@ track_data = json.load(track_data_file)
 def test_get_spotify_playlists():
     assert get_spotify_playlists(playlist_data) == playlist_uris
 
+
 # get_popular_songs returns a list of popular tracks from a dictionary of data
 # def test_get_popular_songs():
     # assert get_popular_songs(data of a playlist dictionary) == a list of songs
 
-# # add_tracks_to_playlist returns a list of of lists of tracks created from a list of tracks
-# def test_add_tracks_to_playlist():
-#     assert add_tracks_to_playlist(list of tracks) == a list or lists of lists
 
+# add_tracks_to_playlist returns a list of of lists of tracks created from a list of tracks
+def test_add_tracks_to_playlist():
+    assert add_tracks_to_playlist(track_data) == track_data['tracks']
