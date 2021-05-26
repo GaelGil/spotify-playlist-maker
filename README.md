@@ -24,6 +24,16 @@ Install the requirements:
 
 - `pip install -r requirements.txt`
 
+
+Run Pytest
+
+This module uses a modified version of the original functions. The reason for this is because the original module uses the spotify API so what I did was supply the data in a seperate file and take out the API calls. Now you can test the functions without using the API.
+
+- `pytest test_create_spotify_playlist.py`
+
+- `pytest test_twitter.py`
+
+
 Test it out with Twitter:
 
 - `python twitter.py`
