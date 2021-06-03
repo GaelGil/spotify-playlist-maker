@@ -153,7 +153,6 @@ class CreateSpotifyPlaylist:
         -------
         str
             A string containg the new spotify playlist id.
-
         """
         # create the name of the playlist
         playlist_name = f'{playlist_name} for user {for_user}'
@@ -231,9 +230,7 @@ def create_spotify_playlist_from_search(query: str, name: str) -> str:
     -------
     str
         A string containg the new spotify playlist id.
-
     """
-
     new_playlist = CreateSpotifyPlaylist()
     # search for playlists
     new_playlist.get_spotify_playlists(query)
