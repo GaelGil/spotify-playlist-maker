@@ -15,7 +15,7 @@ api = tweepy.API(auth)
 
 def get_search_query(tweet: str) -> str:
     """
-    Functio to get search query from tweet
+    Function to get search query from tweet
     This fuction will remove the @mention to get the search query. For example
     `@gg_bot a search query` will return 'a search query'
 
@@ -36,8 +36,8 @@ def get_search_query(tweet: str) -> str:
 
 
 def get_uri(playlist: str) -> str:
-    """Function to get a spotify playlist uri (playlist id)
-
+    """
+    Function to get a spotify playlist uri (playlist id)
     This fuction will remove the 'spotify:playlist:' from 'spotify:playlist:uri` and return
     `uri` (id).
 
