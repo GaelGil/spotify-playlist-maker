@@ -13,7 +13,6 @@ track_data_file = open('./data/tracks_data.json',)
 track_data = json.load(track_data_file)
 
 
-# get_spotify_playlists return a list of playlist uris from a dictrionary of data 
 def test_get_spotify_playlists():
     """
     This function tests get_spotify_playlists. It assserts that the function 
@@ -25,12 +24,6 @@ def test_get_spotify_playlists():
     assert get_spotify_playlists(playlist_data) == playlist_uris
 
 
-# get_popular_songs returns a list of popular tracks from a dictionary of data
-# def test_get_popular_songs():
-    # assert get_popular_songs(data of a playlist dictionary) == a list of songs
-
-
-# add_tracks_to_playlist returns a list of of lists of tracks created from a list of tracks
 def test_add_tracks_to_playlist():
     """
     This function tests add_tracks_to_playlist
