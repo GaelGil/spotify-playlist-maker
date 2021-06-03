@@ -13,8 +13,15 @@ track_data_file = open('./data/tracks_data.json',)
 track_data = json.load(track_data_file)
 
 
-# get_spotify_playlists return a list of playlist uris from a dictrionary of data
+# get_spotify_playlists return a list of playlist uris from a dictrionary of data 
 def test_get_spotify_playlists():
+    """
+    This function tests get_spotify_playlists. It assserts that the function 
+    will return a list of spotify playlist ids (also known as uris). The
+    function will look through some json/dict and retrive the uris and return
+    them as a list. This test is given some data that has been tested on the 
+    real functions and a real output to validate it. 
+    """
     assert get_spotify_playlists(playlist_data) == playlist_uris
 
 
@@ -25,4 +32,7 @@ def test_get_spotify_playlists():
 
 # add_tracks_to_playlist returns a list of of lists of tracks created from a list of tracks
 def test_add_tracks_to_playlist():
+    """
+    This function tests add_tracks_to_playlist
+    """
     assert add_tracks_to_playlist(track_data) == track_data['tracks']
