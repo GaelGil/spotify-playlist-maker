@@ -14,8 +14,8 @@ api = tweepy.API(auth)
 
 
 def get_search_query(tweet: str) -> str:
-    """Functio to get search query from tweet
-
+    """
+    Functio to get search query from tweet
     This fuction will remove the @mention to get the search query. For example
     `@gg_bot a search query` will return 'a search query'
 
@@ -50,7 +50,6 @@ def get_uri(playlist: str) -> str:
     -------
     str
         The same input string without `spotify:playlist:`
-
     """
     return re.sub(r'^spotify\Wplaylist\W', '', playlist)
 
@@ -78,4 +77,3 @@ def twitter_reader():
             retweet = f'@{user} Your playlist {query} has been created. It can be found here https://open.spotify.com/playlist/{uri} Thank you!'
             api.update_status(retweet)
     return 0
-
