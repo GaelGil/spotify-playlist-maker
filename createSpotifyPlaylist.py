@@ -41,7 +41,6 @@ class CreateSpotifyPlaylist:
 
     def __init__(self):
         """
-        Init function
         This function will call the class function `auth_spotify` and create a list for later use.
 
         Parameters
@@ -119,7 +118,6 @@ class CreateSpotifyPlaylist:
         Returns
         -------
         None
-
         """
         # get spotify playlist
         playlist_tracks = self.spotify_client.playlist(playlist_id=spotify_playlist_id)
@@ -138,7 +136,7 @@ class CreateSpotifyPlaylist:
 
     def create_spotify_playlist(self, playlist_name: str, for_user: str) -> str:
         """
-        Functio to create spotify playlist. This function will create a new spotify playlist with
+        Function to create spotify playlist. This function will create a new spotify playlist with
         the title provied by 'playlist_name' and `for_user`. Once we have created the new spotify
         playlist we return the playlist id for later use. This function has no returns
 
@@ -168,8 +166,8 @@ class CreateSpotifyPlaylist:
 
 
     def add_tracks_to_playlist(self, playlist_id: str) -> None:
-        """Function to add songs to a spotify playlist
-
+        """
+        Function to add songs to a spotify playlist
         This function will addd tracks to a playlist. This function has no returns
 
         Parameters
@@ -209,8 +207,8 @@ class CreateSpotifyPlaylist:
 
 
 def create_spotify_playlist_from_search(query: str, name: str) -> str:
-    """Function to create a new spotify playlist for a user
-
+    """
+    Function to create a new spotify playlist for a user
     This function will create a new spotify playlist with the title provied by 'query'
     and `name`. The first step in creating a playlist is to search for spotify
     playlists in `get_spotify_playlists` with our search query. This function will
