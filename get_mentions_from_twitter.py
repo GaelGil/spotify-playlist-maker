@@ -53,30 +53,32 @@ def get_uri(playlist: str) -> str:
     """
     return re.sub(r'^spotify\Wplaylist\W', '', playlist)
 
-# def get_mentions():
-# def reply_playlist():
+
+def get_mentions():
+    """get the @mentions from twitter"""
+    mentions = api.mentions_timeline()
+    for mention in mentions:
+        tweet = mention.text
+        user = mention.user.screen_name
+
+    return tweet, user
 
 
-def twitter_reader():
-    """
-    This function will check if there have been any tweets tweeted @me. If there has
-    it will check if it is a youtube playlist link. If its a youtube playlist link
-    we will create a spotify playlist from it. If the link is not valid then it will
-    tweet back with `not a valid playlist link`
-    """
-    # check at mentions
-    at_mentions = api.mentions_timeline()
-    for mention in at_mentions:
-        tweet = mention.text # select text
-        user = mention.user.screen_name #select username
-        # get query from the tweet
-        query = str(get_search_query(tweet))
-        if str(user) != '@_gg_bot':
-            # create the playlist
-            playlist = create_spotify_playlist_from_search(query, user)
-            # turn the playlist id from spotify:playlist:playlistID to playlistID
-            uri = get_uri(playlist)
-            # tweet back to person with the playlist id
-            retweet = f'@{user} Your playlist {query} has been created. It can be found here https://open.spotify.com/playlist/{uri} Thank you!'
-            api.update_status(retweet)
+def reply_playlist():
+    """reply to user if playlist has been created"""
+    retweet = f'@{user} Your playlist {query} has been created. It can be found here https://open.spotify.com/playlist/{uri} Thank you!'
+    api.update_status(retweet)
+    return 
+
+
+def create_spotify_playlist():
+    """function to get create a spotify playlist for a twiter user"""
+    tweet, user = get_mentions()
+    query = str(get_search_query(tweet))
+    if user != '@gg_b':
+        # create the playlist
+        playlist = create_spotify_playlist_from_search(query, user)
+        # turn the playlist id from spotify:playlist:playlistID to playlistID
+        uri = get_uri(playlist)
+        reply_playlist()
     return 0
