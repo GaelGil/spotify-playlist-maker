@@ -5,11 +5,11 @@ from functionsToTest import get_spotify_playlists, get_popular_songs, add_tracks
 
 
 # Accessing supplied data
-playlist_data_file = open('./data/playlist_data.json',)
+playlist_data_file = open('../data/playlist_data.json',)
 playlist_data = json.load(playlist_data_file)
 playlist_uris = ['spotify:playlist:1VcPVOXrGPsbDXgaeNyX6q', 'spotify:playlist:0vvXsWCC9xrXsKd4FyS8kM', 'spotify:playlist:35xI4hSJ8MdO1xkXwsd56a', 'spotify:playlist:3LFIBdP7eZXJKqf3guepZ1', 'spotify:playlist:5FmmxErJczcrEwIFGIviYo']
 
-track_data_file = open('./data/tracks_data.json',)
+track_data_file = open('../data/tracks_data.json',)
 track_data = json.load(track_data_file)
 
 

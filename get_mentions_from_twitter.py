@@ -53,6 +53,9 @@ def get_uri(playlist: str) -> str:
     """
     return re.sub(r'^spotify\Wplaylist\W', '', playlist)
 
+# def get_mentions():
+# def reply_playlist():
+
 
 def twitter_reader():
     """
