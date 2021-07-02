@@ -64,14 +64,14 @@ def get_mentions():
     return tweet, user
 
 
-def reply_playlist():
+def reply_playlist(user:str, query:str, uri:str) -> None:
     """reply to user if playlist has been created"""
     retweet = f'@{user} Your playlist {query} has been created. It can be found here https://open.spotify.com/playlist/{uri} Thank you!'
     api.update_status(retweet)
-    return 
+    return 0
 
 
-def create_spotify_playlist():
+def create_spotify_playlist() -> None:
     """function to get create a spotify playlist for a twiter user"""
     tweet, user = get_mentions()
     query = str(get_search_query(tweet))
@@ -80,5 +80,5 @@ def create_spotify_playlist():
         playlist = create_spotify_playlist_from_search(query, user)
         # turn the playlist id from spotify:playlist:playlistID to playlistID
         uri = get_uri(playlist)
-        reply_playlist()
+        reply_playlist(user, query, uri)
     return 0

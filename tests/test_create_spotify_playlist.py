@@ -3,7 +3,6 @@ import re
 import pytest
 from functionsToTest import get_spotify_playlists, get_popular_songs, add_tracks_to_playlist
 
-
 # Accessing supplied data
 playlist_data_file = open('../data/playlist_data.json',)
 playlist_data = json.load(playlist_data_file)
