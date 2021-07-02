@@ -1,4 +1,5 @@
-# API Practice
+# About the project 
+In this project I craeted a python module that creates spotify playlists from the most popular songs in spotify playlists. It uses a some words to search the spotify api for playlists with same words in them. From those spotify playlists that we searched we go through each and find its most popular songs. Those most popular songs get added to the playlist we are trying to craete. 
 
 Check out this project [here](https://twitter.com/_gg_bot). This is a link to my twitter that is connected to this project. What you will find here is my timeline where you will see tweets that I have tweeted at myself to test out this project. You will also see replies to those tweets with links to spotify playlists that were created using this project.
 
