@@ -14,7 +14,6 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
 
-
 class CreateSpotifyPlaylist:
     """
     A class used to communicate with the Spotify api.
@@ -39,7 +38,7 @@ class CreateSpotifyPlaylist:
         Adds song to a spotify playlists
     """
 
-    def __init__(self):
+    def __init__(self, query, user):
         """
         This function will call the class function `auth_spotify` and create a list for later use.
 
@@ -52,7 +51,11 @@ class CreateSpotifyPlaylist:
         None
         """
         self.spotify_client = self.auth_spotify()
+        self.query = query
+        self.user = user
         self.popular_tracks = []
+        self.get_spotify_playlists()
+
 
 
     @classmethod
@@ -65,6 +68,7 @@ class CreateSpotifyPlaylist:
 
         Parameters
         ----------
+        None
 
         Returns
         -------
@@ -76,7 +80,7 @@ class CreateSpotifyPlaylist:
         return spotify_client
 
 
-    def get_spotify_playlists(self, query: str) -> None:
+    def get_spotify_playlists(self) -> bool:
         """
         Function to search spotify for playlists. This function will search spotify for playlists
         with the given query. The API will return some data that is accessed as a dict. For each
@@ -86,20 +90,24 @@ class CreateSpotifyPlaylist:
 
         Parameters
         ----------
-        query : str
-            The search query to find spotify playlist
+        None
 
         Returns
         -------
-        None
+        bool
         """
+        tracks_found = True
         # search for playlist that match the query on spotify
-        playlists =  self.spotify_client.search(q=query, type='playlist', limit=50)
-
+        playlists = self.spotify_client.search(q=self.query, type='playlist', limit=50)
+        if playlists['playlists']['items']: # check if query returned playlists
         # find the most popular songs in each playlist
-        for playlist in playlists['playlists']['items']:
-            playlist_uri = playlist['uri']
-            self.get_popular_songs(playlist_uri)
+            for playlist in playlists['playlists']['items']:
+                playlist_uri = playlist['uri']
+                self.get_popular_songs(playlist_uri)
+        else: # no tracks found
+            tracks_found = False
+            return tracks_found
+        return tracks_found
 
 
     def get_popular_songs(self, spotify_playlist_id: str) -> None:
@@ -119,22 +127,22 @@ class CreateSpotifyPlaylist:
         -------
         None
         """
-        # get spotify playlist
+        # get a spotify playlist
         playlist_tracks = self.spotify_client.playlist(playlist_id=spotify_playlist_id)
-        # select the first tracks popularity value
-        most_popular = playlist_tracks['tracks']['items'][0]['track']['popularity']
+        if len(playlist_tracks['tracks']['items']) != 0:
+            most_popular = playlist_tracks['tracks']['items'][0]['track']['popularity']
+            # search for most popular tracks
+            for track in playlist_tracks['tracks']['items']:
+                if track['track']:
+                    popularity = track['track']['popularity'] # get popularity value
+                    uri = track['track']['uri'] # get uri for the track
+                    # add popular tracks to list of popularity and check for duplicates
+                    if uri not in self.popular_tracks and popularity > most_popular:
+                        self.popular_tracks.append(uri)
+                        most_popular = popularity
 
-        # search for most popular tracks
-        for track in playlist_tracks['tracks']['items']:
-            if track['track']:
-                popularity = track['track']['popularity'] # get popularity value
-                uri = track['track']['uri'] # get uri for the track
-                # add popular tracks to list of popularity and check for duplicates
-                if uri not in self.popular_tracks and popularity > most_popular:
-                    self.popular_tracks.append(uri)
 
-
-    def create_spotify_playlist(self, playlist_name: str, for_user: str) -> str:
+    def create_spotify_playlist(self) -> str:
         """
         Function to create spotify playlist. This function will create a new spotify playlist with
         the title provied by 'playlist_name' and `for_user`. Once we have created the new spotify
@@ -142,10 +150,7 @@ class CreateSpotifyPlaylist:
 
         Parameters
         ----------
-        playlist_name : str
-            The name of the new spotify playlist.
-        for_user : str
-            The name of the user who requested a playlist.
+        None
 
         Returns
         -------
@@ -153,8 +158,7 @@ class CreateSpotifyPlaylist:
             A string containg the new spotify playlist id.
         """
         # create the name of the playlist
-        playlist_name = f'{playlist_name} for user {for_user}'
-
+        playlist_name = f'{self.query} for user {self.user}'
         # create a new playlist
         new_playlist = self.spotify_client.user_playlist_create(
             user=os.environ['spotifyUserID'],
@@ -206,7 +210,7 @@ class CreateSpotifyPlaylist:
             )
 
 
-def create_spotify_playlist_from_search(query: str, name: str) -> str:
+def create_spotify_playlist_from_search(query: str, user: str) -> str:
     """
     Function to create a new spotify playlist for a user
     This function will create a new spotify playlist with the title provied by 'query'
@@ -221,7 +225,7 @@ def create_spotify_playlist_from_search(query: str, name: str) -> str:
     ----------
     query : str
         The search query to search on spotify
-    name : str
+    user : str
         The name of the user who requested a playlist.
 
     Returns
@@ -229,12 +233,11 @@ def create_spotify_playlist_from_search(query: str, name: str) -> str:
     str
         A string containg the new spotify playlist id.
     """
-    new_playlist = CreateSpotifyPlaylist()
-    # search for playlists
-    new_playlist.get_spotify_playlists(query)
+    new_playlist = CreateSpotifyPlaylist(query, user)
     # create a new playlist
-    new_spotify_playlist_id = new_playlist.create_spotify_playlist(query, name)
+    new_spotify_playlist_id = new_playlist.create_spotify_playlist()
     # add songs to playlist
     new_playlist.add_tracks_to_playlist(new_spotify_playlist_id)
-
     return new_spotify_playlist_id
+
+create_spotify_playlist_from_search('lofi', 'name')

@@ -21,6 +21,7 @@ def test_get_spotify_playlists():
     real functions and a real output to validate it. 
     """
     assert get_spotify_playlists(playlist_data) == playlist_uris
+    assert get_spotify_playlists(playlist_data) == True
 
 
 def test_add_tracks_to_playlist():
