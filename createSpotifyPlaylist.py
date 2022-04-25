@@ -199,7 +199,7 @@ class CreateSpotifyPlaylist:
         playlist_id : str
             The new spotify playlist id
         
-        tracks:list
+        tracks: list
             The tracks we want to add to the playlist
 
         Returns
@@ -245,6 +245,6 @@ popular_tracks = new_playlist.get_popular_tracks(playlist_tracks, type='not popu
 new_playlist_id = new_playlist.create_spotify_playlist(playlist_name='A Cool Playlist')
 # Add all the songs we have
 new_playlist.add_tracks_to_playlist(new_playlist_id, popular_tracks)
-print(new_playlist_id)
+print(f'https://open.spotify.com/playlist/{new_playlist_id}')
 
 
