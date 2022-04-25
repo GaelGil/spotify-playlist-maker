@@ -21,8 +21,8 @@ class CreateSpotifyPlaylist:
 
     Attributes
     ----------
-    popular_tracks : list
-        A list of popular tracks on spotify
+    spotify_client : list
+        The spotify client
 
     Methods
     -------
@@ -55,7 +55,6 @@ class CreateSpotifyPlaylist:
         None
         """
         self.spotify_client = self.auth_spotify()
-        # self.popular_tracks = []
 
 
     @classmethod
@@ -79,7 +78,7 @@ class CreateSpotifyPlaylist:
         return spotify_client
 
 
-    def search_spotify_playlist(self, query: str, limit=25) -> None:
+    def search_spotify_playlist(self, query: str, limit=25) -> list:
         """
         Function to search spotify for playlists. This function will search spotify for playlists
         with the given query. The API will return some data that is accessed as a dict. For each
@@ -94,7 +93,8 @@ class CreateSpotifyPlaylist:
             The number of results we want in our search (default is 25)
         Returns
         -------
-        None
+        list
+            A list of spotify playlist ids
         """
         # search for playlist that match the query on spotify
         playlists =  self.spotify_client.search(q=query, type='playlist', limit=limit)
@@ -106,7 +106,7 @@ class CreateSpotifyPlaylist:
         return playlist_ids
 
 
-    def get_playlist_tracks(self, playlist_ids:list):
+    def get_playlist_tracks(self, playlist_ids:list) -> list:
         """
         Function to search spotify for playlists. This function will search spotify for playlists
         with the given query. The API will return some data that is accessed as a dict. For each
@@ -121,7 +121,8 @@ class CreateSpotifyPlaylist:
 
         Returns
         -------
-        None
+        list
+            A list of track ids from the playlists we searched earlier
         """
         tracks = []
         for i in range(len(playlist_ids)):
@@ -136,7 +137,7 @@ class CreateSpotifyPlaylist:
         return tracks
 
 
-    def get_popular_tracks(self, tracks: list, type:str, popular_limit=75) -> None:
+    def get_popular_tracks(self, tracks: list, type:str, popular_limit=75) -> list:
         """
         Function to get most popular songs from a spotify playlist. 
 
@@ -147,7 +148,8 @@ class CreateSpotifyPlaylist:
 
         Returns
         -------
-        None
+        list
+            A list of popular or unpopular tracks (ids).
         """
         tracks_for_playlist = []
         for i in range(len(tracks)):
