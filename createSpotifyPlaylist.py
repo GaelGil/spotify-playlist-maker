@@ -27,19 +27,19 @@ class CreateSpotifyPlaylist:
     Methods
     -------
     search_spotify_playlist(self, query:str)
-        Searches spotify for playlists
+        Searches spotify for playlists.
 
-    get_playlist_tracks(self, spotify_playlist_id:str):
-        Gets most popular songs from spotify playlist
+    get_playlist_tracks(self, playlist_ids:str):
+        Get a list of tracks in a playlist.
 
     get_popular_tracks(self, playlist_name:str, for_user:str)
-        Creates a new spotify playlists using a name and a users name
+        Gets popular or unpopular songs and adds them to a list
 
-    create_spotify_playlist(self, playlist_id:str)
-        Adds song to a spotify playlists
+    create_spotify_playlist(self, playlist_name:str)
+        Creates a spotify playlists.
     
     add_tracks_to_playlist(self, playlist_id:str)
-        Adds song to a spotify playlists
+        Add songs in a list to a spotify playlists.
     """
 
     def __init__(self):
@@ -108,11 +108,7 @@ class CreateSpotifyPlaylist:
 
     def get_playlist_tracks(self, playlist_ids:list) -> list:
         """
-        Function to search spotify for playlists. This function will search spotify for playlists
-        with the given query. The API will return some data that is accessed as a dict. For each
-        playlist in the api data we will get their uri. This will allow us to search each playlist
-        and get that playlists data. For example we for every playlist we will get its most popular
-        songs to do that we call the function `get_popular_songs`. This function has no returns.
+
 
         Parameters
         ----------
