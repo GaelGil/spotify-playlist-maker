@@ -1,5 +1,5 @@
 """
-This module is used to create spotify playlist from other playlists. This is possible by using the
+This module is used to create spotify playlist from other spotify playlists. This is possible by using the
 spotify api which allows us to search and retrive data. We use the spotify playlists to search for
 playlist with a provided search query. All the playlists that are found will be searched for its
 most popular songs. Those songs will then be added to a new spotify playlist which will be craeted
@@ -10,6 +10,7 @@ will require both the spotify and twitter api.
 """
 import os
 import time
+from tkinter.tix import Tree
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
@@ -26,11 +27,11 @@ class CreateSpotifyPlaylist:
 
     Methods
     -------
-    search_spotify_playlist(self, query:str)
+    search_spotify_playlist(self, query:str, limit:int)
         Searches spotify for playlists.
 
-    get_playlist_tracks(self, playlist_ids:str):
-        Get a list of tracks in a playlist.
+    get_tracks_for_new_playlist(self, playlist_ids:str, popularity:int, popular:bool):
+        Get a list of tracks for the new playlist.
 
     get_popular_tracks(self, playlist_name:str, for_user:str)
         Gets popular or unpopular songs and adds them to a list
@@ -78,7 +79,7 @@ class CreateSpotifyPlaylist:
         return spotify_client
 
 
-    def search_spotify_playlist(self, query: str, limit=25) -> list:
+    def search_spotify_playlist(self, query:str, limit=25) -> list:
         """
         Function to search spotify for playlists. This function will search spotify for playlists
         with the given query. The API will return some data that is accessed as a dict. For each
@@ -98,67 +99,56 @@ class CreateSpotifyPlaylist:
         """
         # search for playlist that match the query on spotify
         playlists =  self.spotify_client.search(q=query, type='playlist', limit=limit)
-        playlist_ids = []
-        # get a playlist id
-        for playlist in playlists['playlists']['items']:
-            playlist_id = playlist['id']
-            playlist_ids.append(playlist_id)
+        # get a list of playlist ids from the
+        playlist_ids = [i['id'] for i in playlists['playlists']['items']]
         return playlist_ids
 
 
-    def get_playlist_tracks(self, playlist_ids:list) -> list:
+    def get_tracks_for_new_playlist(self, playlist_ids:list, popularity=75, popular=True) -> list:
         """
-
+        This function will search spotify for playlists given some playlist ids. We search all the playlists
+        in a for loop by getting their id and searching it in spotify. We will get some data in return. That
+        data will contain data such as the tracks inside the playlist. Within the playlist data we also have
+        track data for each track. For example track id, popularity, name. We then get the id and the popularity
+        of each track in a playlist. Depending on the parameters `popularity` and `popular` we will add a
+        popular or not popular song to a our dictionary containg the ids to the spotify tracks. If `popular`
+        is set to true we add the tracks with a popularity value higher than `popularity`. If its false we add
+        the tracks with the popularity value lower than `popularity`.
 
         Parameters
         ----------
         playlist_ids : list
-            A list of playlists ids
+            A list of playlists ids.
+
+        popularity : int
+            The cut off for the popularity of the songs. (set to 75 by default)
+
+        popular : bool
+            A bool if we want lower or higher than our popularity value (True by default)
 
         Returns
         -------
         list
-            A list of track ids from the playlists we searched earlier
+            A list of track ids to add to our new playlist.
         """
-        tracks = []
+        tracks = {}
         for i in range(len(playlist_ids)):
             playlist = self.spotify_client.playlist(playlist_id=playlist_ids[i])
             tracks_in_playlist = playlist
             # for every track in every playlist
             for track in tracks_in_playlist['tracks']['items']:
                 if track['track']:
-                    # select the data the id and add it to a list
-                    id_ = track['track']['id']
-                    tracks.append(id_)           
-        return tracks
-
-
-    def get_popular_tracks(self, tracks: list, type:str, popular_limit=75) -> list:
-        """
-        Function to get most popular songs from a spotify playlist. 
-
-        Parameters
-        ----------
-        tracks : list
-            The ID's for tracks inside the playlists we searched
-
-        Returns
-        -------
-        list
-            A list of popular or unpopular tracks (ids).
-        """
-        tracks_for_playlist = []
-        for i in range(len(tracks)):
-            track = self.spotify_client.track(track_id=tracks[i])
-            popularity = track['popularity']
-            id_ = track['id']
-            if type == 'popular':
-                if int(popularity) >= int(popular_limit) and id_ not in tracks_for_playlist:
-                    tracks_for_playlist.append(id_)
-            else:
-                if int(popularity) <= int(popular_limit) and id_ not in tracks_for_playlist:
-                    tracks_for_playlist.append(id_)
-        return tracks
+                    track_popularity = track['track']['popularity']
+                    track_id = track['track']['id']
+                    if track_id in tracks:
+                        continue
+                    if popular:
+                        if track_popularity >= popularity:
+                            tracks[track_id] = 0
+                    else:
+                        if track_popularity <= popularity:
+                            tracks[track_id] = 0 
+        return list(tracks.keys())
 
 
     def create_spotify_playlist(self, playlist_name: str) -> str:
@@ -227,22 +217,21 @@ class CreateSpotifyPlaylist:
         else:
             self.spotify_client.playlist_add_items(
                 playlist_id=playlist_id,
-                items=self.tracks,
+                items=tracks,
             )
 
 
 new_playlist = CreateSpotifyPlaylist()
-query = 'indie pop'
+query = 'punk rock'
 # Search spotify for playlist using our query
-ids = new_playlist.search_spotify_playlist(query=query, limit=25)
+ids = new_playlist.search_spotify_playlist(query=query, limit=50)
 # Get the tracks inside the playlist
-playlist_tracks = new_playlist.get_playlist_tracks(ids)
-# Get the popular tracks from the tracks list we have
-popular_tracks = new_playlist.get_popular_tracks(playlist_tracks, type='not popular', popular_limit='65')
-# Create a new playlist
-new_playlist_id = new_playlist.create_spotify_playlist(playlist_name='A Cool Playlist')
-# Add all the songs we have
-new_playlist.add_tracks_to_playlist(new_playlist_id, popular_tracks)
+playlist_tracks = new_playlist.get_tracks_for_new_playlist(ids, popular=True)
+# # Create a new playlist
+new_playlist_id = new_playlist.create_spotify_playlist(playlist_name='bot playlist')
+# # Add all the songs we have
+new_playlist.add_tracks_to_playlist(new_playlist_id, playlist_tracks)
 print(f'https://open.spotify.com/playlist/{new_playlist_id}')
 
-
+# Example playlist created
+# https://open.spotify.com/playlist/0ITi27Sdu3vg0loDX1YXgw
