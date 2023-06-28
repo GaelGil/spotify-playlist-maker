@@ -6,3 +6,4 @@ token.pickle
 **/**__pycache__
 .pytest_cache
 
+get_mentions_from_twitter.py
