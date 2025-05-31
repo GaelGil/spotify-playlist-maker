@@ -10,11 +10,13 @@ will require both the spotify and twitter api.
 """
 import os
 import time
-from tkinter.tix import Tree
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
+import logging
 
-
+logging.basicConfig(
+    level=logging.INFO,  
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 class CreateSpotifyPlaylist:
     """
@@ -43,59 +45,24 @@ class CreateSpotifyPlaylist:
         Add songs in a list to a spotify playlists.
     """
 
-    def __init__(self):
-        """
-        This function will call the class function `auth_spotify` and create a list for later use.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-        self.spotify_client = self.auth_spotify()
-
-
-    @classmethod
-    def auth_spotify(cls):
-        """
-        Function to authenticate spotify
-        This function will get the spotify client so we can use the api by authenticating. It will
-        also set the scopes so we are able to use the tools that we need such as
-        `playlist-modify-public` to create public spotify playlist
-
-        Parameters
-        ----------
-
-        Returns
-        -------
-        str
-            The spotify client
-        """
-        scope = "user-library-read,user-top-read,playlist-modify-public"
-        spotify_client = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
-        return spotify_client
-
-
-    def search_spotify_playlist(self, query:str, limit=25) -> list:
+    def __init__(self, client):
+        self.spotify_client = client.get_client()
+        
+    def search_spotify_playlist(self, query:str, limit: int=25) -> list:
         """
         Function to search spotify for playlists. This function will search spotify for playlists
         with the given query. The API will return some data that is accessed as a dict. For each
         playlist in the api data we will get their id. This will allow us to search each playlist
         by their id and get that playlist data. We then return all the ids that we have.
 
-        Parameters
-        ----------
-        query : str
-            The search query to find spotify playlist
-        limit: int
-            The number of results we want in our search (default is 25)
-        Returns
-        -------
-        list
-            A list of spotify playlist ids
+        Args:
+            query: 
+                The search query to find spotify playlist
+            limit: int
+                The number of results we want in our search (default is 25)
+        Returns:
+            list
+                A list of spotify playlist ids
         """
         # search for playlist that match the query on spotify
         playlists =  self.spotify_client.search(q=query, type='playlist', limit=limit)
@@ -219,19 +186,3 @@ class CreateSpotifyPlaylist:
                 playlist_id=playlist_id,
                 items=tracks,
             )
-
-
-new_playlist = CreateSpotifyPlaylist()
-query = 'punk rock'
-# Search spotify for playlist using our query
-ids = new_playlist.search_spotify_playlist(query=query, limit=50)
-# Get the tracks inside the playlist
-playlist_tracks = new_playlist.get_tracks_for_new_playlist(ids, popular=True)
-# # Create a new playlist
-new_playlist_id = new_playlist.create_spotify_playlist(playlist_name='bot playlist')
-# # Add all the songs we have
-new_playlist.add_tracks_to_playlist(new_playlist_id, playlist_tracks)
-print(f'https://open.spotify.com/playlist/{new_playlist_id}')
-
-# Example playlist created
-# https://open.spotify.com/playlist/0ITi27Sdu3vg0loDX1YXgw
