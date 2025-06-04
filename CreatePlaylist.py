@@ -22,10 +22,9 @@ class CreatePlaylist:
     """
     A class used to communicate with the Spotify api.
 
-    Attributes
-    ----------
-    spotify_client : list
-        The spotify client
+    Attributes:
+        spotify_client: list
+            The spotify client
 
     Methods
     -------
@@ -57,10 +56,8 @@ class CreatePlaylist:
         by their id and get that playlist data. We then return all the ids that we have.
 
         Args:
-            query: 
-                The search query to find spotify playlist
-            limit: int
-                The number of results we want in our search (default is 25)
+            None
+
         Returns:
             list
         """
@@ -86,12 +83,6 @@ class CreatePlaylist:
         playlist_ids : list
             A list of playlists ids.
 
-        popularity : int
-            The cut off for the popularity of the songs. (set to 75 by default)
-
-        popular : bool
-            A bool if we want lower or higher than our popularity value (True by default)
-
         Returns:
             list
         """
@@ -99,17 +90,16 @@ class CreatePlaylist:
         for i in range(len(playlist_ids)): # for every playlist
             playlist = self.spotify_client.playlist(playlist_id=playlist_ids[i]) # get the playlist by id
             for track in playlist['tracks']['items']: # for every track in playlist (within its items)
-                if track['track']: # if there exists a track 
-                    track_popularity = track['track']['popularity'] # select popularity
-                    track_id = track['track']['id'] # select the id
-                    if track_id in tracks: # check if it already exists in trakcs
-                        continue # if so continue
-                    if self.config['POPULAR']: # if we are going by popular songs
-                        if track_popularity >= self.config['POPULARITY']: # if song is more popular than set poupularity
-                            tracks[track_id] = 0 # add to trakcs
-                    else: # if not going by popular
-                        if track_popularity <= self.config['POPULARITY']: # if track is less than set popularity 
-                            tracks[track_id] = 0 # add to tracks
+                track_id = track['track']['id'] # select the id
+                if not track['track'] or track_id in tracks: # if track doesnt exist or track is in tracks
+                    continue 
+                track_popularity = track['track']['popularity'] # select popularity
+                if self.config['POPULAR']: # if we are going by popular songs
+                    if track_popularity >= self.config['POPULARITY']: # if song is more popular than set poupularity
+                        tracks[track_id] = 0 # add to trakcs
+                else: # if not going by popular songs
+                    if track_popularity <= self.config['POPULARITY']: # if track is less than set popularity 
+                        tracks[track_id] = 0 # add to tracks
         return list(tracks.keys()) # return the keys of the tracks dictionary
         
 
