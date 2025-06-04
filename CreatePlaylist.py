@@ -18,7 +18,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-class CreateSpotifyPlaylist:
+class CreatePlaylist:
     """
     A class used to communicate with the Spotify api.
 
@@ -45,10 +45,11 @@ class CreateSpotifyPlaylist:
         Add songs in a list to a spotify playlists.
     """
 
-    def __init__(self, client):
+    def __init__(self, client, config):
         self.spotify_client = client.get_client()
+        self.config = config
         
-    def search_spotify_playlist(self, query:str, limit: int=25) -> list:
+    def search_spotify_playlist(self) -> list:
         """
         Function to search spotify for playlists. This function will search spotify for playlists
         with the given query. The API will return some data that is accessed as a dict. For each
@@ -62,16 +63,15 @@ class CreateSpotifyPlaylist:
                 The number of results we want in our search (default is 25)
         Returns:
             list
-                A list of spotify playlist ids
         """
         # search for playlist that match the query on spotify
-        playlists =  self.spotify_client.search(q=query, type='playlist', limit=limit)
+        playlists =  self.spotify_client.search(q=self.config['QUERY'], type='playlist', limit=self.config['LIMIT'])
         # get a list of playlist ids from the
         playlist_ids = [i['id'] for i in playlists['playlists']['items']]
         return playlist_ids
 
 
-    def get_tracks_for_new_playlist(self, playlist_ids:list, popularity=75, popular=True) -> list:
+    def get_tracks_for_new_playlist(self, playlist_ids:list) -> list:
         """
         This function will search spotify for playlists given some playlist ids. We search all the playlists
         in a for loop by getting their id and searching it in spotify. We will get some data in return. That
@@ -82,8 +82,7 @@ class CreateSpotifyPlaylist:
         is set to true we add the tracks with a popularity value higher than `popularity`. If its false we add
         the tracks with the popularity value lower than `popularity`.
 
-        Parameters
-        ----------
+        Args:
         playlist_ids : list
             A list of playlists ids.
 
@@ -93,51 +92,44 @@ class CreateSpotifyPlaylist:
         popular : bool
             A bool if we want lower or higher than our popularity value (True by default)
 
-        Returns
-        -------
-        list
-            A list of track ids to add to our new playlist.
+        Returns:
+            list
         """
         tracks = {}
-        for i in range(len(playlist_ids)):
-            playlist = self.spotify_client.playlist(playlist_id=playlist_ids[i])
-            tracks_in_playlist = playlist
-            # for every track in every playlist
-            for track in tracks_in_playlist['tracks']['items']:
-                if track['track']:
-                    track_popularity = track['track']['popularity']
-                    track_id = track['track']['id']
-                    if track_id in tracks:
-                        continue
-                    if popular:
-                        if track_popularity >= popularity:
-                            tracks[track_id] = 0
-                    else:
-                        if track_popularity <= popularity:
-                            tracks[track_id] = 0 
-        return list(tracks.keys())
+        for i in range(len(playlist_ids)): # for every playlist
+            playlist = self.spotify_client.playlist(playlist_id=playlist_ids[i]) # get the playlist by id
+            for track in playlist['tracks']['items']: # for every track in playlist (within its items)
+                if track['track']: # if there exists a track 
+                    track_popularity = track['track']['popularity'] # select popularity
+                    track_id = track['track']['id'] # select the id
+                    if track_id in tracks: # check if it already exists in trakcs
+                        continue # if so continue
+                    if self.config['POPULAR']: # if we are going by popular songs
+                        if track_popularity >= self.config['POPULARITY']: # if song is more popular than set poupularity
+                            tracks[track_id] = 0 # add to trakcs
+                    else: # if not going by popular
+                        if track_popularity <= self.config['POPULARITY']: # if track is less than set popularity 
+                            tracks[track_id] = 0 # add to tracks
+        return list(tracks.keys()) # return the keys of the tracks dictionary
+        
 
-
-    def create_spotify_playlist(self, playlist_name: str) -> str:
+    def create_spotify_playlist(self) -> str:
         """
         Function to create spotify playlist. This function will create a new spotify playlist with
         the title provied by 'playlist_name' and `for_user`. Once we have created the new spotify
         playlist we return the playlist id for later use. This function has no returns
 
-        Parameters
-        ----------
-        playlist_name : str
-            The name of the new spotify playlist.
+        Args:
+            playlist_name : str
+                The name of the new spotify playlist.
 
-        Returns
-        -------
-        str
-            A string containg the new spotify playlist id.
+        Returns:
+            str
         """
         # create a new playlist
         new_playlist = self.spotify_client.user_playlist_create(
             user=os.environ['spotifyUserID'],
-            name=playlist_name, public=True,
+            name=self.config['TITLE'], public=True,
             collaborative=False,
             description='Created Using the Spotify API'
             )
@@ -149,17 +141,15 @@ class CreateSpotifyPlaylist:
         Function to add songs to a spotify playlist
         This function will addd tracks to a playlist. This function has no returns
 
-        Parameters
-        ----------
-        playlist_id : str
-            The new spotify playlist id
-        
-        tracks: list
-            The tracks we want to add to the playlist
+        Args:
+            playlist_id : str
+                The new spotify playlist id
+            
+            tracks: list
+                The tracks we want to add to the playlist
 
-        Returns
-        -------
-        None
+        Returns:
+            None
         """
         # chceck if playlist is more than 100 tracks
         if len(tracks) >= 100:

@@ -40,10 +40,10 @@ class ClineManager:
         -------
         None
         """
-        # scope = 'user-library-read,user-top-read,playlist-modify-public'
         self._spotify_client = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
     def get_client(self):
         """
         """
         return self._spotify_client
+    
